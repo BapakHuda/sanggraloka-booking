@@ -446,6 +446,13 @@
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = "https://kvvpqaxlopsyzuhiwjyq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ucMXpeptp-lwtzCRQt8ntg_EskkEJmN";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
     const form = document.getElementById("bookingForm");
     const checkIn = document.getElementById("checkIn");
     const checkOut = document.getElementById("checkOut");
