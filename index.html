@@ -557,8 +557,6 @@ async function loadAvailableBeds() {
 checkIn.addEventListener("change", () => loadAvailableBeds());
 checkOut.addEventListener("change", () => loadAvailableBeds());
 roomType.addEventListener("change", () => loadAvailableBeds());
-    loadAvailableBeds();
-
 
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -573,8 +571,7 @@ roomType.addEventListener("change", () => loadAvailableBeds());
         checkOut.value = "";
       }
     });
-
-    
+loadAvailableBeds();
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
