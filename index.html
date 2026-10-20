@@ -393,6 +393,18 @@
         <option value="4">4 orang</option>
       </select>
     </div>
+    
+<div class="field full" id="companionNamesField" style="display: none;">
+  <label for="companionNames">Nama Pendamping</label>
+  <textarea
+    id="companionNames"
+    name="companionNames"
+    rows="3"
+    placeholder="Tulis nama lengkap setiap pendamping, satu nama per baris"
+  ></textarea>
+  <small>Isi nama pendamping sesuai jumlah orang yang ikut menginap.</small>
+</div>
+
 
     <div class="field full">
       <label for="notes">Catatan Tambahan</label>
@@ -461,6 +473,28 @@ const supabaseClient = window.supabase.createClient(
     
 const roomType = document.getElementById("roomType");
 const bedCode = document.getElementById("bedCode");
+    const family = document.getElementById("family");
+const guestCount = document.getElementById("guestCount");
+const companionNamesField = document.getElementById("companionNamesField");
+const companionNames = document.getElementById("companionNames");
+
+function updateCompanionField() {
+  const count = Number(guestCount.value || 1);
+
+  if (family.value === "Ya" && count > 1) {
+    companionNamesField.style.display = "block";
+    companionNames.required = true;
+  } else {
+    companionNamesField.style.display = "none";
+    companionNames.required = false;
+    companionNames.value = "";
+  }
+}
+
+family.addEventListener("change", updateCompanionField);
+guestCount.addEventListener("change", updateCompanionField);
+
+updateCompanionField();
 
 async function loadAvailableBeds() {
   bedCode.innerHTML = '<option value="">Memeriksa ketersediaan...</option>';
