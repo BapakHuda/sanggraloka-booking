@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#164e3d">
+  <title>Admin SANGGRALOKA</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f4;
+      color: #20332b;
+    }
+    header {
+      background: #164e3d;
+      color: white;
+      padding: 20px;
+      font-weight: bold;
+    }
+    header span { color: #d6ad60; }
+    main {
+      max-width: 480px;
+      margin: 55px auto;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 26px;
+      border: 1px solid #e1e8e3;
+      border-radius: 16px;
+      box-shadow: 0 8px 28px #173d2c0b;
+    }
+    h1 { font-size: 24px; margin-top: 0; }
+    p { color: #718078; font-size: 14px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 16px 0 7px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d7e0d9;
+      border-radius: 9px;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px;
+      border: 0;
+      border-radius: 9px;
+      background: #164e3d;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    #message {
+      margin-top: 16px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+    .error { color: #b42318; }
+    .success { color: #167447; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>SANGGRALOKA<span>.</span> <small>ADMIN</small></header>
+
+  <main>
+    <section class="card" id="loginCard">
+      <h1>Login Pengelola</h1>
+      <p>Masuk menggunakan akun staf yang telah didaftarkan.</p>
+
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+
+        <label for="password">Kata sandi</label>
+        <input id="password" type="password"
+          autocomplete="current-password" required>
+
+        <button id="loginButton" type="submit">Masuk</button>
+      </form>
+      <div id="message" role="status"></div>
+    </section>
+
+    <section class="card hidden" id="dashboard">
+      <h1>Dashboard Pengelola</h1>
+      <p id="userEmail"></p>
+      <p>Login berhasil. Tahap berikutnya adalah menghubungkan daftar booking dengan izin akses yang aman.</p>
+      <button id="logoutButton" type="button">Keluar</button>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    "use strict";
+
+    const SUPABASE_URL =
+      "https://kvvpqaxlopsyzuhiwjyq.supabase.co";
+
+    // Gunakan publishable key proyek, bukan secret/service-role key.
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_ucMXpeptp-lwtzCRQt8ntg_EskkEJmN";
+
+    const loginCard = document.getElementById("loginCard");
+    const dashboard = document.getElementById("dashboard");
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+    const userEmail = document.getElementById("userEmail");
+
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = type || "";
+    }
+
+    function showDashboard(user) {
+      loginCard.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+      userEmail.textContent = "Login sebagai: " + (user.email || "staf");
+    }
+
+    function showLogin() {
+      dashboard.classList.add("hidden");
+      loginCard.classList.remove("hidden");
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginButton.disabled = true;
+      loginButton.textContent = "Memeriksa...";
+      showMessage("", "");
+
+      try {
+        const { data, error } = await client.auth.signInWithPassword({
+          email: document.getElementById("email").value.trim(),
+          password: document.getElementById("password").value
+        });
+
+        if (error) throw error;
+
+        showDashboard(data.user);
+      } catch (error) {
+        showMessage("Login gagal. Periksa email dan kata sandi.", "error");
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "Masuk";
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click",
+      async () => {
+        await client.auth.signOut();
+        showLogin();
+        loginForm.reset();
+        showMessage("Kamu sudah keluar.", "success");
+      }
+    );
+
+    client.auth.getSession().then(({ data, error }) => {
+      if (!error && data.session) showDashboard(data.session.user);
+    });
+  </script>
+</body>
+</html>
