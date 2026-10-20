@@ -170,9 +170,52 @@
       }
     );
 
-    client.auth.getSession().then(({ data, error }) => {
-      if (!error && data.session) showDashboard(data.session.user);
-    });
+    async function loadBookings() {
+  const { data, error } = await client.rpc("get_admin_bookings");
+
+  if (error) {
+    document.getElementById("dashboard").innerHTML +=
+      `<p>Gagal memuat booking: ${error.message}</p>`;
+    return;
+  }
+
+  const area = document.getElementById("dashboard");
+  area.innerHTML += "<h3>Daftar Booking</h3>";
+
+  if (!data || data.length === 0) {
+    area.innerHTML += "<p>Belum ada data booking.</p>";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.border = "1";
+  table.cellPadding = "8";
+  table.innerHTML = `
+    <tr>
+      <th>Kode Booking</th>
+      <th>Status</th>
+      <th>Dibuat</th>
+    </tr>
+  `;
+
+  data.forEach((booking) => {
+    const row = table.insertRow();
+    row.insertCell().textContent = booking.booking_code ?? "-";
+    row.insertCell().textContent = booking.status ?? "-";
+    row.insertCell().textContent = booking.created_at
+      ? new Date(booking.created_at).toLocaleString("id-ID")
+      : "-";
+  });
+
+  area.appendChild(table);
+}
+
+client.auth.getSession().then(({ data, error }) => {
+  if (!error && data.session) {
+    showDashboard(data.session.user);
+    loadBookings();
+  }
+});
   </script>
 </body>
 </html>
