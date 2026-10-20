@@ -187,7 +187,15 @@
     return;
   }
 
-  const table = document.createElement("table");
+  const wrapper = document.createElement("div");
+wrapper.style.overflowX = "auto";
+wrapper.style.width = "100%";
+
+const table = document.createElement("table");
+table.style.width = "100%";
+table.style.minWidth = "850px";
+table.style.borderCollapse = "collapse";
+table.style.fontSize = "14px";
   table.border = "1";
   table.cellPadding = "8";
   table.innerHTML = `
@@ -224,7 +232,8 @@ data.forEach((booking) => {
 });
 
 
-  area.appendChild(table);
+  wrapper.appendChild(table);
+area.appendChild(wrapper);
 }
 
 client.auth.getSession().then(({ data, error }) => {
