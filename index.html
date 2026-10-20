@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#164e3d">
+  <title>Sanggraloka | Pemesanan Penginapan</title>
+  <style>
+    :root {
+      --green: #164e3d;
+      --green-light: #eaf4ee;
+      --gold: #d6ad60;
+      --text: #20332b;
+      --muted: #718078;
+      --border: #e1e8e3;
+      --bg: #f5f7f4;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--green);
+      color: white;
+      padding: 18px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+
+    .brand span { color: var(--gold); }
+
+    .header-label {
+      font-size: 12px;
+      color: #e0eae4;
+    }
+
+    .hero {
+      background: var(--green);
+      color: white;
+      padding: 45px 6% 76px;
+    }
+
+    .hero-inner {
+      max-width: 1080px;
+      margin: auto;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.18;
+      max-width: 650px;
+      margin: 12px 0;
+    }
+
+    .hero p {
+      max-width: 570px;
+      color: #e0eae4;
+      margin-bottom: 0;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: -38px auto 0;
+      padding: 0 20px 48px;
+      position: relative;
+    }
+
+    .notice {
+      background: #fff8e8;
+      border: 1px solid #efdfb7;
+      color: #705a2a;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px;
+      box-shadow: 0 8px 28px #173d2c0b;
+    }
+
+    h2 {
+      font-size: 21px;
+      margin: 0 0 5px;
+    }
+
+    .subheading {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 24px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #d7e0d9;
+      border-radius: 9px;
+      padding: 12px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: white;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px #164e3d12;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 78px;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      background: var(--green);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover { background: #103b2e; }
+
+    .side-card {
+      background: var(--green-light);
+      border: 1px solid #dbe9df;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .side-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .side-card p {
+      margin: 0;
+      color: #50665a;
+      font-size: 13px;
+    }
+
+    .feature {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin: 18px 0;
+    }
+
+    .feature-icon {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--green-light);
+      font-size: 18px;
+    }
+
+    .feature strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .feature span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      .hero { padding-top: 34px; }
+      .card { padding: 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .header-label { text-align: right; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">SANGGRALOKA<span>.</span></div>
+    <div class="header-label">Layanan pemesanan penginapan</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Selamat datang</div>
+      <h1>Tempat istirahat yang nyaman, pemesanan yang mudah.</h1>
+      <p>Isi formulir pemesanan untuk mengajukan tempat menginap di Sanggraloka. Data pemesanan akan diproses setelah sistem resmi diaktifkan.</p>
+    </div>
+  </section>
+
+  <main>
+    <div class="notice">
+      <strong>Mode pengembangan:</strong> formulir ini belum terhubung ke sistem pemesanan aktif. Jangan masukkan data pribadi asli dahulu.
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <h2>Formulir Pemesanan</h2>
+        <p class="subheading">Lengkapi informasi berikut dengan benar.</p>
+
+        <form id="bookingForm">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="guestName">Nama pemesan</label>
+              <input id="guestName" name="guestName" type="text"
+                placeholder="Masukkan nama pemesan" required>
+            </div>
+
+            <div class="field">
+              <label for="phone">Nomor telepon</label>
+              <input id="phone" name="phone" type="tel"
+                placeholder="Contoh: 08xxxxxxxxxx" required>
+            </div>
+
+            <div class="field">
+              <label for="guestCount">Jumlah orang</label>
+              <select id="guestCount" name="guestCount" required>
+                <option value="">Pilih jumlah</option>
+                <option value="1">1 orang</option>
+                <option value="2">2 orang</option>
+                <option value="3">3 orang</option>
+                <option value="4">4 orang</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="roomType">Jenis kamar</label>
+              <select id="roomType" name="roomType" required>
+                <option value="">Pilih jenis kamar</option>
+                <option value="M">Kamar pria</option>
+                <option value="W">Kamar wanita</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="bedPreference">Pilihan tempat tidur</label>
+              <select id="bedPreference" name="bedPreference" required>
+                <option value="">Pilih posisi</option>
+                <option value="any">Bebas, sesuai ketersediaan</option>
+                <option value="upper">Tempat tidur atas</option>
+                <option value="lower">Tempat tidur bawah</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="checkIn">Tanggal dan waktu masuk</label>
+              <input id="checkIn" name="checkIn" type="datetime-local" required>
+            </div>
+
+            <div class="field">
+              <label for="checkOut">Tanggal dan waktu keluar</label>
+              <input id="checkOut" name="checkOut" type="datetime-local" required>
+            </div>
+
+            <div class="field full">
+              <label for="notes">Catatan tambahan (opsional)</label>
+              <textarea id="notes" name="notes"
+                placeholder="Tuliskan kebutuhan khusus jika ada"></textarea>
+              <span class="hint">Hindari memasukkan nomor identitas atau informasi sensitif pada tahap pengembangan.</span>
+            </div>
+          </div>
+
+          <button type="submit">Lanjutkan Pemesanan</button>
+        </form>
+      </section>
+
+      <aside>
+        <div class="side-card">
+          <h3>Informasi Pemesanan</h3>
+          <p>Pengajuan baru akan dikonfirmasi setelah ketersediaan tempat tidur dan jadwal menginap berhasil diperiksa oleh sistem.</p>
+        </div>
+
+        <div class="card">
+          <h2>Alur Layanan</h2>
+
+          <div class="feature">
+            <div class="feature-icon">📝</div>
+            <div>
+              <strong>1. Isi formulir</strong>
+              <span>Masukkan jadwal dan kebutuhan menginap.</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🛏️</div>
+            <div>
+              <strong>2. Cek ketersediaan</strong>
+              <span>Tempat tidur harus tersedia pada jadwal pilihan.</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">✓</div>
+            <div>
+              <strong>3. Konfirmasi</strong>
+              <span>Status pemesanan ditampilkan setelah sistem terhubung.</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    Sanggraloka Booking · Versi pengembangan
+  </footer>
+
+  <script>
+    const form = document.getElementById("bookingForm");
+    const checkIn = document.getElementById("checkIn");
+    const checkOut = document.getElementById("checkOut");
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const minimumDate = now.toISOString().slice(0, 16);
+
+    checkIn.min = minimumDate;
+    checkOut.min = minimumDate;
+
+    checkIn.addEventListener("change", () => {
+      checkOut.min = checkIn.value || minimumDate;
+      if (checkOut.value && checkOut.value <= checkIn.value) {
+        checkOut.value = "";
+      }
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      if (!checkIn.value || !checkOut.value ||
+          new Date(checkOut.value) <= new Date(checkIn.value)) {
+        alert("Tanggal keluar harus setelah tanggal masuk.");
+        return;
+      }
+
+      alert(
+        "Tampilan formulir berhasil diuji.\\n\\n" +
+        "Pemesanan belum disimpan. Sistem akan dihubungkan ke database " +
+        "Supabase pada tahap berikutnya."
+      );
+    });
+  </script>
+</body>
+</html>
