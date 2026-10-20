@@ -371,15 +371,17 @@
       </select>
     </div>
 
-    <div class="field">
-      <label for="bedPreference">Pilihan Tempat Tidur *</label>
-      <select id="bedPreference" name="bedPreference" required>
-        <option value="">Pilih posisi tempat tidur</option>
-        <option value="any">Bebas sesuai ketersediaan</option>
-        <option value="upper">Tempat tidur atas</option>
-        <option value="lower">Tempat tidur bawah</option>
-      </select>
-    </div>
+    
+<div class="field full">
+  <label for="bedCode">Tempat Tidur Tersedia *</label>
+  <select id="bedCode" name="bedCode" required>
+    <option value="">Pilih tanggal dan jenis kamar terlebih dahulu</option>
+  </select>
+  <span class="hint">
+    Pilihan akan diperbarui berdasarkan jadwal dan jenis kamar.
+  </span>
+</div>
+
 
     <div class="field full">
       <label for="guestCount">Jumlah Orang yang Menginap *</label>
@@ -456,6 +458,75 @@ const supabaseClient = window.supabase.createClient(
     const form = document.getElementById("bookingForm");
     const checkIn = document.getElementById("checkIn");
     const checkOut = document.getElementById("checkOut");
+    
+const roomType = document.getElementById("roomType");
+const bedCode = document.getElementById("bedCode");
+
+async function loadAvailableBeds() {
+  bedCode.innerHTML = '<option value="">Memeriksa ketersediaan...</option>';
+  bedCode.disabled = true;
+
+  if (!checkIn.value || !checkOut.value || !roomType.value) {
+    bedCode.innerHTML =
+      '<option value="">Pilih tanggal dan jenis kamar terlebih dahulu</option>';
+    return;
+  }
+
+  if (new Date(checkOut.value) <= new Date(checkIn.value)) {
+    bedCode.innerHTML =
+      '<option value="">Tanggal keluar harus setelah tanggal masuk</option>';
+    return;
+  }
+
+  const { data, error } = await supabaseClient.rpc("get_available_beds", {
+    p_planned_check_in: new Date(checkIn.value).toISOString(),
+    p_planned_check_out: new Date(checkOut.value).toISOString()
+  });
+
+  if (error) {
+    bedCode.innerHTML =
+      '<option value="">Gagal memeriksa ketersediaan</option>';
+    console.error("Gagal mengambil tempat tidur:", error.message);
+    return;
+  }
+
+  const roomName = roomType.value === "M"
+    ? "Kamar Pria"
+    : "Kamar Wanita";
+
+  const availableBeds = (data || []).filter(
+    bed => bed.room_name === roomName
+  );
+
+  bedCode.innerHTML = "";
+
+  if (availableBeds.length === 0) {
+    bedCode.innerHTML =
+      '<option value="">Tidak ada tempat tidur tersedia</option>';
+    return;
+  }
+
+  bedCode.disabled = false;
+
+  const firstOption = document.createElement("option");
+  firstOption.value = "";
+  firstOption.textContent = "Pilih tempat tidur";
+  bedCode.appendChild(firstOption);
+
+  availableBeds.forEach(bed => {
+    const option = document.createElement("option");
+    option.value = bed.bed_code;
+    option.textContent =
+      bed.bed_code + " — " +
+      (bed.bed_position === "upper" ? "Atas" : "Bawah");
+    bedCode.appendChild(option);
+  });
+}
+
+checkIn.addEventListener("change", loadAvailableBeds);
+checkOut.addEventListener("change", loadAvailableBeds);
+roomType.addEventListener("change", loadAvailableBeds);
+
 
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
