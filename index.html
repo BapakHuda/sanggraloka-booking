@@ -455,135 +455,257 @@
   <footer>
     Sanggraloka Booking · Versi pengembangan
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://kvvpqaxlopsyzuhiwjyq.supabase.co";
+  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+
+// ===== KONFIGURASI SUPABASE =====
+const SUPABASE_URL = "https://kvvpqaxlopsyzuhiwjyq.supabase.co";
+
+// Pertahankan publishable key asli dari proyek Supabase kamu.
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ucMXpeptp-lwtzCRQt8ntg_EskkEJmN";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-    const form = document.getElementById("bookingForm");
-    const checkIn = document.getElementById("checkIn");
-    const checkOut = document.getElementById("checkOut");
-    
+const form = document.getElementById("bookingForm");
+const checkIn = document.getElementById("checkIn");
+const checkOut = document.getElementById("checkOut");
 const roomType = document.getElementById("roomType");
 const bedCode = document.getElementById("bedCode");
-    const family = document.getElementById("family");
+const proof = document.getElementById("proof");
+const family = document.getElementById("family");
 const guestCount = document.getElementById("guestCount");
 const companionNamesField = document.getElementById("companionNamesField");
 const companionNames = document.getElementById("companionNames");
 
+const submitButton = form.querySelector('button[type="submit"]');
+
+let supabaseClient = null;
+let bedRequestNumber = 0;
+
+// ===== INISIALISASI =====
+try {
+  if (
+    !window.supabase ||
+    !SUPABASE_PUBLISHABLE_KEY ||
+    SUPABASE_PUBLISHABLE_KEY === "GANTI_DENGAN_PUBLISHABLE_KEY_ASLI"
+  ) {
+    throw new Error("Konfigurasi Supabase belum diisi dengan benar.");
+  }
+
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+} catch (error) {
+  console.error("Inisialisasi Supabase gagal:", error);
+}
+
+// ===== TANGGAL MINIMUM =====
+function localDateTimeValue(date) {
+  const localDate = new Date(
+    date.getTime() - date.getTimezoneOffset() * 60000
+  );
+  return localDate.toISOString().slice(0, 16);
+}
+
+function setMinimumDates() {
+  const minimumDate = localDateTimeValue(new Date());
+
+  checkIn.min = minimumDate;
+  checkOut.min = checkIn.value || minimumDate;
+}
+
+setMinimumDates();
+
+// ===== PENDAMPING =====
 function updateCompanionField() {
   const count = Number(guestCount.value || 1);
+  const needsCompanionNames = family.value === "Ya" && count > 1;
 
-  if (family.value === "Ya" && count > 1) {
-    companionNamesField.style.display = "block";
-    companionNames.required = true;
-  } else {
-    companionNamesField.style.display = "none";
-    companionNames.required = false;
+  companionNamesField.style.display =
+    needsCompanionNames ? "block" : "none";
+
+  companionNames.required = needsCompanionNames;
+
+  if (!needsCompanionNames) {
     companionNames.value = "";
   }
 }
 
 family.addEventListener("change", updateCompanionField);
 guestCount.addEventListener("change", updateCompanionField);
-
 updateCompanionField();
 
-async function loadAvailableBeds() {
-  bedCode.innerHTML = '<option value="">Memeriksa ketersediaan...</option>';
-  bedCode.disabled = true;
-
-  if (!checkIn.value || !checkOut.value || !roomType.value) {
-    bedCode.innerHTML =
-      '<option value="">Pilih tanggal dan jenis kamar terlebih dahulu</option>';
-    return;
-  }
-
-  if (new Date(checkOut.value) <= new Date(checkIn.value)) {
-    bedCode.innerHTML =
-      '<option value="">Tanggal keluar harus setelah tanggal masuk</option>';
-    return;
-  }
-
-  const { data, error } = await supabaseClient.rpc("get_available_beds", {
-    p_planned_check_in: new Date(checkIn.value).toISOString(),
-    p_planned_check_out: new Date(checkOut.value).toISOString()
-  });
-
-  if (error) {
-    bedCode.innerHTML =
-      '<option value="">Gagal memeriksa ketersediaan</option>';
-    console.error("Gagal mengambil tempat tidur:", error.message);
-    return;
-  }
-
-  const roomName = roomType.value === "M"
-    ? "Kamar Pria"
-    : "Kamar Wanita";
-
-  const availableBeds = (data || []).filter(
-    bed => bed.room_name === roomName
-  );
-
+// ===== PEMBERSIHAN PILIHAN TEMPAT TIDUR =====
+function resetBedOptions(message) {
   bedCode.innerHTML = "";
 
-  if (availableBeds.length === 0) {
-    bedCode.innerHTML =
-      '<option value="">Tidak ada tempat tidur tersedia</option>';
+  const option = document.createElement("option");
+  option.value = "";
+  option.textContent = message;
+
+  bedCode.appendChild(option);
+  bedCode.disabled = true;
+}
+
+function validStayDates() {
+  if (!checkIn.value || !checkOut.value) {
+    return false;
+  }
+
+  const start = new Date(checkIn.value);
+  const end = new Date(checkOut.value);
+
+  return (
+    !Number.isNaN(start.getTime()) &&
+    !Number.isNaN(end.getTime()) &&
+    start > new Date() &&
+    end > start
+  );
+}
+
+// ===== MEMUAT TEMPAT TIDUR TERSEDIA =====
+async function loadAvailableBeds() {
+  const requestNumber = ++bedRequestNumber;
+
+  resetBedOptions("Memeriksa ketersediaan...");
+
+  if (!checkIn.value || !checkOut.value || !roomType.value) {
+    resetBedOptions(
+      "Pilih tanggal dan jenis kamar terlebih dahulu"
+    );
     return;
   }
 
-  bedCode.disabled = false;
+  if (!validStayDates()) {
+    resetBedOptions(
+      "Periksa kembali tanggal masuk dan tanggal keluar"
+    );
+    return;
+  }
 
-  const firstOption = document.createElement("option");
-  firstOption.value = "";
-  firstOption.textContent = "Pilih tempat tidur";
-  bedCode.appendChild(firstOption);
+  if (!supabaseClient) {
+    resetBedOptions("Koneksi sistem belum siap");
+    return;
+  }
 
-  availableBeds.forEach(bed => {
-    const option = document.createElement("option");
-    option.value = bed.bed_code;
-    option.textContent =
-      bed.bed_code + " — " +
-      (bed.bed_position === "upper" ? "Atas" : "Bawah");
-    bedCode.appendChild(option);
-  });
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "get_available_beds",
+      {
+        p_planned_check_in: new Date(checkIn.value).toISOString(),
+        p_planned_check_out: new Date(checkOut.value).toISOString()
+      }
+    );
+
+    // Abaikan hasil permintaan lama jika pengguna sudah mengubah pilihan.
+    if (requestNumber !== bedRequestNumber) return;
+
+    if (error) throw error;
+
+    const expectedRoomName =
+      roomType.value === "M" ? "Kamar Pria" : "Kamar Wanita";
+
+    const availableBeds = (data || []).filter((bed) => {
+      return (
+        bed.room_name === expectedRoomName &&
+        bed.bed_code
+      );
+    });
+
+    if (availableBeds.length === 0) {
+      resetBedOptions("Tidak ada tempat tidur tersedia");
+      return;
+    }
+
+    bedCode.innerHTML = "";
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Pilih tempat tidur";
+    bedCode.appendChild(placeholder);
+
+    availableBeds.forEach((bed) => {
+      const option = document.createElement("option");
+      option.value = bed.bed_code;
+
+      const position =
+        bed.bed_position === "upper" ? "Atas" : "Bawah";
+
+      option.textContent = `${bed.bed_code} — ${position}`;
+      bedCode.appendChild(option);
+    });
+
+    bedCode.disabled = false;
+
+  } catch (error) {
+    if (requestNumber !== bedRequestNumber) return;
+
+    console.error("Gagal mengambil tempat tidur:", error);
+
+    resetBedOptions("Gagal memeriksa ketersediaan. Coba lagi.");
+  }
 }
 
-checkIn.addEventListener("change", () => loadAvailableBeds());
-checkOut.addEventListener("change", () => loadAvailableBeds());
-roomType.addEventListener("change", () => loadAvailableBeds());
+// Check-in berubah: sesuaikan batas check-out, lalu periksa ulang.
+checkIn.addEventListener("change", () => {
+  checkOut.min = checkIn.value || localDateTimeValue(new Date());
 
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    const minimumDate = now.toISOString().slice(0, 16);
+  if (checkOut.value && checkOut.value <= checkIn.value) {
+    checkOut.value = "";
+  }
 
-    checkIn.min = minimumDate;
-    checkOut.min = minimumDate;
+  loadAvailableBeds();
+});
 
-    checkIn.addEventListener("change", () => {
-      checkOut.min = checkIn.value || minimumDate;
-      if (checkOut.value && checkOut.value <= checkIn.value) {
-        checkOut.value = "";
-      }
-    });
-loadAvailableBeds();
+checkOut.addEventListener("change", loadAvailableBeds);
+roomType.addEventListener("change", loadAvailableBeds);
+
+// Panggilan awal untuk menampilkan petunjuk.
+resetBedOptions("Pilih tanggal dan jenis kamar terlebih dahulu");
+
+// ===== PENGIRIMAN PEMESANAN =====
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const proof = document.getElementById("proof");
-  const submitButton = form.querySelector('button[type="submit"]');
+  if (submitButton.disabled) return;
 
-  if (!proof.files.length) {
+  if (!supabaseClient) {
+    alert("Koneksi Supabase belum siap. Periksa konfigurasi sistem.");
+    return;
+  }
+
+  if (!form.reportValidity()) return;
+
+  if (!validStayDates()) {
+    alert(
+      "Check-in harus di masa depan dan check-out harus setelah check-in."
+    );
+    return;
+  }
+
+  if (!roomType.value || !bedCode.value || bedCode.disabled) {
+    alert("Silakan pilih tempat tidur yang tersedia.");
+    return;
+  }
+
+  if (!proof.files || proof.files.length === 0) {
     alert("Silakan pilih file bukti persyaratan.");
     return;
   }
 
   const file = proof.files[0];
+  const allowedTypes = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Berkas harus berformat PDF, JPG, JPEG, atau PNG.");
+    proof.value = "";
+    return;
+  }
 
   if (file.size > 10 * 1024 * 1024) {
     alert("Ukuran file bukti maksimal 10 MB.");
@@ -591,31 +713,44 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  if (!checkIn.value || !checkOut.value ||
-      new Date(checkIn.value) <= new Date() ||
-      new Date(checkOut.value) <= new Date(checkIn.value)) {
-    alert("Check-in harus di masa depan dan check-out setelah check-in.");
-    return;
-  }
+  const getValue = (id) =>
+    document.getElementById(id).value.trim();
 
-  if (!bedCode.value) {
-    alert("Silakan pilih tempat tidur yang tersedia.");
-    return;
-  }
+  const guestName = getValue("guestName");
+  const nip = getValue("nip");
+  const phone = getValue("phone");
+  const workUnit = getValue("workUnit");
+  const echelon = getValue("echelon");
+  const purpose = getValue("purpose");
 
-  const value = (id) => document.getElementById(id).value.trim();
-
-  const guestName = value("guestName");
-  const nip = value("nip");
-  const phone = value("phone");
-  const workUnit = value("workUnit");
-  const echelon = value("echelon");
-  const purpose = value("purpose");
-
-  if (!guestName || !nip || !phone || !workUnit || !echelon || !purpose) {
+  if (
+    !guestName ||
+    !nip ||
+    !phone ||
+    !workUnit ||
+    !echelon ||
+    !purpose
+  ) {
     alert("Mohon lengkapi semua data wajib.");
     return;
   }
+
+  if (!["Jump Shift", "Transit"].includes(purpose)) {
+    alert("Tujuan penggunaan tidak valid.");
+    return;
+  }
+
+  if (Number(guestCount.value) !== 1) {
+    alert("Sistem saat ini hanya mendukung satu penghuni per pemesanan.");
+    return;
+  }
+
+  // Simpan pilihan untuk memastikan data yang dikirim tidak berubah
+  // akibat pengguna mengubah formulir selama proses berjalan.
+  const selectedBedCode = bedCode.value;
+  const selectedRoomType = roomType.value;
+  const plannedCheckIn = new Date(checkIn.value);
+  const plannedCheckOut = new Date(checkOut.value);
 
   submitButton.disabled = true;
   submitButton.textContent = "Memproses...";
@@ -643,9 +778,10 @@ form.addEventListener("submit", async (event) => {
         p_requester_unit: workUnit,
         p_requester_echelon: echelon,
         p_requester_phone: phone,
-        p_purpose: purpose === "Jump Shift" ? "jump_shift" : "transit",
-        p_planned_check_in: new Date(checkIn.value).toISOString(),
-        p_planned_check_out: new Date(checkOut.value).toISOString(),
+        p_purpose:
+          purpose === "Jump Shift" ? "jump_shift" : "transit",
+        p_planned_check_in: plannedCheckIn.toISOString(),
+        p_planned_check_out: plannedCheckOut.toISOString(),
         p_requirement_reference: uploadedPath,
         p_occupants: [
           {
@@ -653,35 +789,49 @@ form.addEventListener("submit", async (event) => {
             is_primary_requester: true
           }
         ],
-        p_bed_codes: [bedCode.value]
+        p_bed_codes: [selectedBedCode]
       }
     );
 
     if (error) throw error;
 
     if (!data || data.success !== true) {
-      throw new Error(data?.message || "Pemesanan tidak berhasil.");
+      throw new Error(
+        data?.message || "Pemesanan tidak berhasil."
+      );
     }
 
     alert(
-      "Pemesanan berhasil!\n" +
-      "Kode booking: " + data.booking_code
+      "Pemesanan berhasil!\nKode booking: " +
+      data.booking_code
     );
 
     form.reset();
     updateCompanionField();
-    bedCode.innerHTML = '<option value="">Pilih tanggal dan jenis kamar terlebih dahulu</option>';
-    bedCode.disabled = true;
+    setMinimumDates();
+    resetBedOptions(
+      "Pilih tanggal dan jenis kamar terlebih dahulu"
+    );
 
   } catch (error) {
     console.error("Pemesanan gagal:", error);
-    alert("Pemesanan gagal: " + (error.message || "Terjadi kesalahan."));
-    alert("Jika file bukti sudah terunggah, file tersebut mungkin masih tersimpan. Hubungi pengelola bila perlu.");
+
+    alert(
+      "Pemesanan gagal: " +
+      (error.message || "Terjadi kesalahan.")
+    );
+
+    if (uploadedPath) {
+      alert(
+        "Berkas bukti mungkin sudah terunggah meskipun pemesanan gagal. " +
+        "Jangan mengirim berulang kali sebelum statusnya diperiksa."
+      );
+    }
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Lanjutkan Pemesanan";
   }
 });
-
+</script>
 </body>
 </html>
