@@ -275,70 +275,133 @@
         <h2>Formulir Pemesanan</h2>
         <p class="subheading">Lengkapi informasi berikut dengan benar.</p>
 
-        <form id="bookingForm">
-          <div class="form-grid">
-            <div class="field full">
-              <label for="guestName">Nama pemesan</label>
-              <input id="guestName" name="guestName" type="text"
-                placeholder="Masukkan nama pemesan" required>
-            </div>
+        
+<form id="bookingForm">
+  <div class="form-grid">
 
-            <div class="field">
-              <label for="phone">Nomor telepon</label>
-              <input id="phone" name="phone" type="tel"
-                placeholder="Contoh: 08xxxxxxxxxx" required>
-            </div>
+    <div class="field full">
+      <label for="guestName">Nama Lengkap Pegawai *</label>
+      <input id="guestName" name="guestName" type="text"
+        placeholder="Masukkan nama lengkap" required>
+    </div>
 
-            <div class="field">
-              <label for="guestCount">Jumlah orang</label>
-              <select id="guestCount" name="guestCount" required>
-                <option value="">Pilih jumlah</option>
-                <option value="1">1 orang</option>
-                <option value="2">2 orang</option>
-                <option value="3">3 orang</option>
-                <option value="4">4 orang</option>
-              </select>
-            </div>
+    <div class="field">
+      <label for="nip">NIP *</label>
+      <input id="nip" name="nip" type="text"
+        placeholder="Masukkan NIP" required>
+    </div>
 
-            <div class="field">
-              <label for="roomType">Jenis kamar</label>
-              <select id="roomType" name="roomType" required>
-                <option value="">Pilih jenis kamar</option>
-                <option value="M">Kamar pria</option>
-                <option value="W">Kamar wanita</option>
-              </select>
-            </div>
+    <div class="field">
+      <label for="phone">No. Handphone *</label>
+      <input id="phone" name="phone" type="tel"
+        placeholder="Contoh: 08xxxxxxxxxx" required>
+    </div>
 
-            <div class="field">
-              <label for="bedPreference">Pilihan tempat tidur</label>
-              <select id="bedPreference" name="bedPreference" required>
-                <option value="">Pilih posisi</option>
-                <option value="any">Bebas, sesuai ketersediaan</option>
-                <option value="upper">Tempat tidur atas</option>
-                <option value="lower">Tempat tidur bawah</option>
-              </select>
-            </div>
+    <div class="field full">
+      <label for="echelon">Unit Eselon I *</label>
+      <select id="echelon" name="echelon" required>
+        <option value="">Pilih Unit Eselon I</option>
+        <option>Direktorat Jenderal Bea dan Cukai</option>
+        <option>Direktorat Jenderal Pajak</option>
+        <option>Inspektorat Jenderal</option>
+        <option>Sekretariat Jenderal</option>
+        <option>Direktorat Jenderal Anggaran</option>
+        <option>Direktorat Jenderal Strategi Ekonomi dan Fiskal</option>
+        <option>Direktorat Jenderal Perbendaharaan</option>
+        <option>Direktorat Jenderal Kekayaan Negara</option>
+        <option>Direktorat Jenderal Perimbangan Keuangan</option>
+        <option>Direktorat Jenderal Pengelolaan Pembiayaan dan Risiko</option>
+        <option>Direktorat Jenderal Stabilitas dan Pengembangan Sektor Keuangan</option>
+        <option>Badan Pendidikan dan Pelatihan Keuangan</option>
+      </select>
+    </div>
 
-            <div class="field">
-              <label for="checkIn">Tanggal dan waktu masuk</label>
-              <input id="checkIn" name="checkIn" type="datetime-local" required>
-            </div>
+    <div class="field full">
+      <label for="workUnit">Instansi/Unit Kerja *</label>
+      <input id="workUnit" name="workUnit" type="text"
+        placeholder="Contoh: KPU BC Soekarno-Hatta" required>
+    </div>
 
-            <div class="field">
-              <label for="checkOut">Tanggal dan waktu keluar</label>
-              <input id="checkOut" name="checkOut" type="datetime-local" required>
-            </div>
+    <div class="field full">
+      <label for="purpose">Tujuan Penggunaan *</label>
+      <select id="purpose" name="purpose" required>
+        <option value="">Pilih tujuan penggunaan</option>
+        <option value="Jump Shift">Jump Shift</option>
+        <option value="Transit">Transit</option>
+      </select>
+    </div>
 
-            <div class="field full">
-              <label for="notes">Catatan tambahan (opsional)</label>
-              <textarea id="notes" name="notes"
-                placeholder="Tuliskan kebutuhan khusus jika ada"></textarea>
-              <span class="hint">Hindari memasukkan nomor identitas atau informasi sensitif pada tahap pengembangan.</span>
-            </div>
-          </div>
+    <div class="field full">
+      <label for="proof">Upload Bukti Pendukung *</label>
+      <input id="proof" name="proof" type="file"
+        accept=".pdf,.jpg,.jpeg,.png" required>
+      <span class="hint">
+        Bukti boarding pass untuk Transit atau screenshot jadwal untuk
+        Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
+      </span>
+    </div>
 
-          <button type="submit">Lanjutkan Pemesanan</button>
-        </form>
+    <div class="field full">
+      <label for="family">Apakah membawa keluarga atau pendamping? *</label>
+      <select id="family" name="family" required>
+        <option value="">Pilih jawaban</option>
+        <option value="Ya">Ya</option>
+        <option value="Tidak">Tidak</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="checkIn">Tanggal dan Waktu Masuk *</label>
+      <input id="checkIn" name="checkIn"
+        type="datetime-local" required>
+    </div>
+
+    <div class="field">
+      <label for="checkOut">Tanggal dan Waktu Keluar *</label>
+      <input id="checkOut" name="checkOut"
+        type="datetime-local" required>
+    </div>
+
+    <div class="field">
+      <label for="roomType">Jenis Kamar *</label>
+      <select id="roomType" name="roomType" required>
+        <option value="">Pilih jenis kamar</option>
+        <option value="M">Kamar pria</option>
+        <option value="W">Kamar wanita</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="bedPreference">Pilihan Tempat Tidur *</label>
+      <select id="bedPreference" name="bedPreference" required>
+        <option value="">Pilih posisi tempat tidur</option>
+        <option value="any">Bebas sesuai ketersediaan</option>
+        <option value="upper">Tempat tidur atas</option>
+        <option value="lower">Tempat tidur bawah</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label for="guestCount">Jumlah Orang yang Menginap *</label>
+      <select id="guestCount" name="guestCount" required>
+        <option value="">Pilih jumlah orang</option>
+        <option value="1">1 orang</option>
+        <option value="2">2 orang</option>
+        <option value="3">3 orang</option>
+        <option value="4">4 orang</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label for="notes">Catatan Tambahan</label>
+      <textarea id="notes" name="notes"
+        placeholder="Catatan jika diperlukan"></textarea>
+    </div>
+
+  </div>
+
+  <button type="submit">Lanjutkan Pemesanan</button>
+</form>
       </section>
 
       <aside>
@@ -403,6 +466,13 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+      const proof = document.getElementById("proof");
+
+if (proof.files.length > 0 && proof.files[0].size > 10 * 1024 * 1024) {
+  alert("Ukuran file bukti maksimal 10 MB. Silakan pilih file yang lebih kecil.");
+  proof.value = "";
+  return;
+}
 
       if (!checkIn.value || !checkOut.value ||
           new Date(checkOut.value) <= new Date(checkIn.value)) {
