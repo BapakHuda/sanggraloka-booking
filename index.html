@@ -557,6 +557,7 @@ async function loadAvailableBeds() {
 checkIn.addEventListener("change", loadAvailableBeds);
 checkOut.addEventListener("change", loadAvailableBeds);
 roomType.addEventListener("change", loadAvailableBeds);
+    loadAvailableBeds();
 
 
     const now = new Date();
