@@ -208,11 +208,13 @@ table.style.fontSize = "14px";
   <th>Check-out</th>
   <th>Status</th>
   <th>Dibuat</th>
+  <th>Aksi</th>
 </tr>
 
   `;
 
   
+
 data.forEach((booking) => {
   const row = table.insertRow();
 
@@ -229,7 +231,55 @@ data.forEach((booking) => {
   row.insertCell().textContent = booking.created_at
     ? new Date(booking.created_at).toLocaleString("id-ID")
     : "-";
+
+  const actionCell = row.insertCell();
+  const select = document.createElement("select");
+
+  ["confirmed", "cancelled", "completed"].forEach((status) => {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = status;
+    select.appendChild(option);
+  });
+
+  select.value = booking.status;
+
+  const saveButton = document.createElement("button");
+  saveButton.textContent = "Simpan";
+  saveButton.style.marginLeft = "6px";
+
+  saveButton.addEventListener("click", async () => {
+    if (select.value === booking.status) {
+      alert("Status tidak berubah.");
+      return;
+    }
+
+    if (!confirm(`Ubah status ${booking.booking_code} menjadi ${select.value}?`)) {
+      return;
+    }
+
+    saveButton.disabled = true;
+
+    const { error } = await client.rpc("update_booking_status", {
+      p_booking_code: booking.booking_code,
+      p_new_status: select.value
+    });
+
+    saveButton.disabled = false;
+
+    if (error) {
+      alert("Gagal mengubah status: " + error.message);
+      return;
+    }
+
+    alert("Status berhasil diubah.");
+    loadBookings();
+  });
+
+  actionCell.appendChild(select);
+  actionCell.appendChild(saveButton);
 });
+
 
 
   wrapper.appendChild(table);
