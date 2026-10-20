@@ -191,21 +191,38 @@
   table.border = "1";
   table.cellPadding = "8";
   table.innerHTML = `
-    <tr>
-      <th>Kode Booking</th>
-      <th>Status</th>
-      <th>Dibuat</th>
-    </tr>
+    
+<tr>
+  <th>Kode Booking</th>
+  <th>Nama Pemesan</th>
+  <th>Unit Kerja</th>
+  <th>Check-in</th>
+  <th>Check-out</th>
+  <th>Status</th>
+  <th>Dibuat</th>
+</tr>
+
   `;
 
-  data.forEach((booking) => {
-    const row = table.insertRow();
-    row.insertCell().textContent = booking.booking_code ?? "-";
-    row.insertCell().textContent = booking.status ?? "-";
-    row.insertCell().textContent = booking.created_at
-      ? new Date(booking.created_at).toLocaleString("id-ID")
-      : "-";
-  });
+  
+data.forEach((booking) => {
+  const row = table.insertRow();
+
+  row.insertCell().textContent = booking.booking_code ?? "-";
+  row.insertCell().textContent = booking.requester_name ?? "-";
+  row.insertCell().textContent = booking.requester_unit ?? "-";
+  row.insertCell().textContent = booking.planned_check_in
+    ? new Date(booking.planned_check_in).toLocaleDateString("id-ID")
+    : "-";
+  row.insertCell().textContent = booking.planned_check_out
+    ? new Date(booking.planned_check_out).toLocaleDateString("id-ID")
+    : "-";
+  row.insertCell().textContent = booking.status ?? "-";
+  row.insertCell().textContent = booking.created_at
+    ? new Date(booking.created_at).toLocaleString("id-ID")
+    : "-";
+});
+
 
   area.appendChild(table);
 }
