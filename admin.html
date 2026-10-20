@@ -180,7 +180,12 @@
   }
 
   const area = document.getElementById("dashboard");
-  area.innerHTML += "<h3>Daftar Booking</h3>";
+area.querySelectorAll(".booking-list").forEach((el) => el.remove());
+
+const heading = document.createElement("h3");
+heading.textContent = "Daftar Booking";
+heading.className = "booking-list";
+area.appendChild(heading);
 
   if (!data || data.length === 0) {
     area.innerHTML += "<p>Belum ada data booking.</p>";
@@ -188,6 +193,7 @@
   }
 
   const wrapper = document.createElement("div");
+      wrapper.className = "booking-list";
 wrapper.style.overflowX = "auto";
 wrapper.style.width = "100%";
 
