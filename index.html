@@ -4,835 +4,1499 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#164e3d">
-  <title>Sanggraloka | Pemesanan Penginapan</title>
+  <meta name="theme-color" content="#123c2d">
+  <meta
+    name="description"
+    content="Formulir pemesanan penginapan SANGGRALOKA."
+  >
+  <title>Pemesanan SANGGRALOKA</title>
+
   <style>
     :root {
-      --green: #164e3d;
-      --green-light: #eaf4ee;
-      --gold: #d6ad60;
-      --text: #20332b;
-      --muted: #718078;
-      --border: #e1e8e3;
-      --bg: #f5f7f4;
+      --green-950: #123c2d;
+      --green-900: #194b37;
+      --green-800: #236246;
+      --green-100: #e8f3eb;
+      --cream: #f7f8f3;
+      --white: #ffffff;
+      --text: #20352b;
+      --muted: #64756b;
+      --border: #d9e2da;
+      --danger: #b42318;
+      --success: #167345;
+      --radius: 14px;
+      --shadow: 0 12px 35px rgba(18, 60, 45, 0.08);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      background: var(--cream);
       color: var(--text);
-      background: var(--bg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
       line-height: 1.6;
     }
 
-    header {
-      background: var(--green);
-      color: white;
-      padding: 18px 6%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .site-header {
+      padding: 30px 20px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at top right, #387653 0, transparent 42%),
+        linear-gradient(135deg, var(--green-950), var(--green-800));
+    }
+
+    .header-inner,
+    .page-container,
+    .footer-inner {
+      width: min(900px, 100%);
+      margin: 0 auto;
     }
 
     .brand {
-      font-size: 21px;
+      margin: 0;
+      font-size: clamp(1.7rem, 5vw, 2.5rem);
       font-weight: 800;
-      letter-spacing: .4px;
+      letter-spacing: 0.04em;
     }
 
-    .brand span { color: var(--gold); }
-
-    .header-label {
-      font-size: 12px;
-      color: #e0eae4;
+    .tagline {
+      margin: 5px 0 0;
+      color: #e1eee5;
     }
 
-    .hero {
-      background: var(--green);
-      color: white;
-      padding: 45px 6% 76px;
+    .page-container {
+      padding: 28px 18px 45px;
     }
 
-    .hero-inner {
-      max-width: 1080px;
-      margin: auto;
+    .intro {
+      margin-bottom: 22px;
     }
 
-    .eyebrow {
-      color: var(--gold);
-      text-transform: uppercase;
-      font-size: 12px;
-      font-weight: bold;
-      letter-spacing: 2px;
+    .intro h2 {
+      margin: 0 0 6px;
+      color: var(--green-950);
+      font-size: 1.45rem;
     }
 
-    h1 {
-      font-size: clamp(30px, 5vw, 46px);
-      line-height: 1.18;
-      max-width: 650px;
-      margin: 12px 0;
-    }
-
-    .hero p {
-      max-width: 570px;
-      color: #e0eae4;
-      margin-bottom: 0;
-    }
-
-    main {
-      max-width: 1080px;
-      margin: -38px auto 0;
-      padding: 0 20px 48px;
-      position: relative;
+    .intro p {
+      margin: 0;
+      color: var(--muted);
     }
 
     .notice {
-      background: #fff8e8;
-      border: 1px solid #efdfb7;
-      color: #705a2a;
-      border-radius: 12px;
-      padding: 13px 16px;
-      font-size: 13px;
-      margin-bottom: 18px;
+      margin: 20px 0;
+      padding: 14px 16px;
+      border: 1px solid #d5e5d7;
+      border-radius: 10px;
+      background: var(--green-100);
+      color: var(--green-950);
+      font-size: 0.93rem;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 22px;
-      align-items: start;
+    .notice strong {
+      display: block;
+      margin-bottom: 3px;
     }
 
-    .card {
-      background: white;
+    .form-card {
+      padding: clamp(18px, 4vw, 32px);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 26px;
-      box-shadow: 0 8px 28px #173d2c0b;
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow);
     }
 
-    h2 {
-      font-size: 21px;
-      margin: 0 0 5px;
+    fieldset {
+      min-width: 0;
+      margin: 0 0 28px;
+      padding: 0;
+      border: 0;
     }
 
-    .subheading {
-      color: var(--muted);
-      font-size: 13px;
-      margin: 0 0 24px;
+    fieldset + fieldset {
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    legend {
+      width: 100%;
+      margin-bottom: 18px;
+      color: var(--green-950);
+      font-size: 1.12rem;
+      font-weight: 750;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
+      min-width: 0;
     }
 
-    .full { grid-column: 1 / -1; }
-
-    label {
-      font-size: 13px;
-      font-weight: 700;
+    .field.full {
+      grid-column: 1 / -1;
     }
 
-    input, select, textarea {
+    label,
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 650;
+      font-size: 0.94rem;
+    }
+
+    .required {
+      color: var(--danger);
+    }
+
+    input,
+    select,
+    textarea {
+      display: block;
       width: 100%;
-      border: 1px solid #d7e0d9;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid #cbd7cd;
       border-radius: 9px;
-      padding: 12px;
-      font: inherit;
-      font-size: 14px;
+      background: #fff;
       color: var(--text);
-      background: white;
       outline: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px #164e3d12;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
     textarea {
+      min-height: 110px;
       resize: vertical;
-      min-height: 78px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--green-800);
+      box-shadow: 0 0 0 3px rgba(35, 98, 70, 0.12);
+    }
+
+    input[type="file"] {
+      padding: 9px;
     }
 
     .hint {
-      font-size: 11px;
+      display: block;
+      margin-top: 6px;
       color: var(--muted);
+      font-size: 0.83rem;
+      line-height: 1.5;
     }
 
-    button {
+    .bed-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .bed-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      margin: 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .bed-option:has(input:checked) {
+      border-color: var(--green-800);
+      background: var(--green-100);
+    }
+
+    .bed-option input {
+      width: 18px;
+      min-width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin: 0;
+      accent-color: var(--green-800);
+    }
+
+    .bed-option span {
+      overflow-wrap: anywhere;
+    }
+
+    .bed-message {
+      padding: 13px;
+      border: 1px dashed var(--border);
+      border-radius: 9px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .bed-status {
+      margin-top: 9px;
+      font-size: 0.9rem;
+      font-weight: 650;
+    }
+
+    .bed-status.error {
+      color: var(--danger);
+    }
+
+    .bed-status.success {
+      color: var(--success);
+    }
+
+    .submit-button {
+      display: block;
       width: 100%;
+      min-height: 50px;
+      padding: 13px 18px;
       border: 0;
       border-radius: 10px;
-      padding: 14px 18px;
-      background: var(--green);
-      color: white;
-      font-size: 15px;
-      font-weight: 700;
+      background: var(--green-900);
+      color: #fff;
+      font-weight: 750;
       cursor: pointer;
-      margin-top: 20px;
+      transition: background 0.15s, opacity 0.15s;
     }
 
-    button:hover { background: #103b2e; }
-
-    .side-card {
-      background: var(--green-light);
-      border: 1px solid #dbe9df;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 16px;
+    .submit-button:hover:not(:disabled) {
+      background: var(--green-800);
     }
 
-    .side-card h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
 
-    .side-card p {
-      margin: 0;
-      color: #50665a;
-      font-size: 13px;
+    .form-message {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
     }
 
-    .feature {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      margin: 18px 0;
-    }
-
-    .feature-icon {
-      width: 38px;
-      height: 38px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: var(--green-light);
-      font-size: 18px;
-    }
-
-    .feature strong {
+    .form-message.show {
       display: block;
-      font-size: 14px;
     }
 
-    .feature span {
-      color: var(--muted);
-      font-size: 12px;
+    .form-message.error {
+      border: 1px solid #f2c4c0;
+      background: #fff1f0;
+      color: var(--danger);
     }
 
-    footer {
-      text-align: center;
-      padding: 24px 16px;
+    .form-message.success {
+      border: 1px solid #c8e5d1;
+      background: #eef9f0;
+      color: var(--success);
+    }
+
+    .site-footer {
+      padding: 22px 18px;
       border-top: 1px solid var(--border);
       color: var(--muted);
-      font-size: 12px;
+      text-align: center;
+      font-size: 0.86rem;
     }
 
-    @media (max-width: 760px) {
-      .layout { grid-template-columns: 1fr; }
-      .hero { padding-top: 34px; }
-      .card { padding: 20px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .full { grid-column: auto; }
-      .header-label { text-align: right; }
+    @media (max-width: 600px) {
+      .form-grid,
+      .bed-options {
+        grid-template-columns: 1fr;
+      }
+
+      .page-container {
+        padding-inline: 12px;
+      }
+
+      .site-header {
+        padding: 24px 18px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <div class="brand">SANGGRALOKA<span>.</span></div>
-    <div class="header-label">Layanan pemesanan penginapan</div>
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="brand">SANGGRALOKA</h1>
+      <p class="tagline">Formulir Pemesanan Penginapan</p>
+    </div>
   </header>
 
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="eyebrow">Selamat datang</div>
-      <h1>Tempat istirahat yang nyaman, pemesanan yang mudah.</h1>
-      <p>Isi formulir pemesanan untuk mengajukan tempat menginap di Sanggraloka. Data pemesanan akan diproses setelah sistem resmi diaktifkan.</p>
-    </div>
-  </section>
+  <main class="page-container">
+    <section class="intro">
+      <h2>Formulir Pemesanan</h2>
+      <p>Isi data dengan benar sebelum mengirimkan permohonan pemesanan.</p>
+    </section>
 
-  <main>
     <div class="notice">
-      <strong>Mode pengembangan:</strong> formulir ini belum terhubung ke sistem pemesanan aktif. Jangan masukkan data pribadi asli dahulu.
+      <strong>Informasi pemesanan</strong>
+      Pastikan tanggal, data penghuni, dan tempat tidur sudah sesuai.
+      Setelah pengajuan berhasil, simpan PDF bukti pemesanan.
+      Bukti pengajuan bukan jaminan bahwa pemesanan telah disetujui pengelola.
     </div>
 
-    <div class="layout">
-      <section class="card">
-        <h2>Formulir Pemesanan</h2>
-        <p class="subheading">Lengkapi informasi berikut dengan benar.</p>
+    <form id="bookingForm" class="form-card">
+      <fieldset>
+        <legend>1. Data Pemesan</legend>
 
-        
-<form id="bookingForm">
-  <div class="form-grid">
-
-    <div class="field full">
-      <label for="guestName">Nama Lengkap Pegawai *</label>
-      <input id="guestName" name="guestName" type="text"
-        placeholder="Masukkan nama lengkap" required>
-    </div>
-
-    <div class="field">
-      <label for="nip">NIP *</label>
-      <input id="nip" name="nip" type="text"
-        placeholder="Masukkan NIP" required>
-    </div>
-
-    <div class="field">
-      <label for="phone">No. Handphone *</label>
-      <input id="phone" name="phone" type="tel"
-        placeholder="Contoh: 08xxxxxxxxxx" required>
-    </div>
-
-    <div class="field full">
-      <label for="echelon">Unit Eselon I *</label>
-      <select id="echelon" name="echelon" required>
-        <option value="">Pilih Unit Eselon I</option>
-        <option>Direktorat Jenderal Bea dan Cukai</option>
-        <option>Direktorat Jenderal Pajak</option>
-        <option>Inspektorat Jenderal</option>
-        <option>Sekretariat Jenderal</option>
-        <option>Direktorat Jenderal Anggaran</option>
-        <option>Direktorat Jenderal Strategi Ekonomi dan Fiskal</option>
-        <option>Direktorat Jenderal Perbendaharaan</option>
-        <option>Direktorat Jenderal Kekayaan Negara</option>
-        <option>Direktorat Jenderal Perimbangan Keuangan</option>
-        <option>Direktorat Jenderal Pengelolaan Pembiayaan dan Risiko</option>
-        <option>Direktorat Jenderal Stabilitas dan Pengembangan Sektor Keuangan</option>
-        <option>Badan Pendidikan dan Pelatihan Keuangan</option>
-      </select>
-    </div>
-
-    <div class="field full">
-      <label for="workUnit">Instansi/Unit Kerja *</label>
-      <input id="workUnit" name="workUnit" type="text"
-        placeholder="Contoh: KPU BC Soekarno-Hatta" required>
-    </div>
-
-    <div class="field full">
-      <label for="purpose">Tujuan Penggunaan *</label>
-      <select id="purpose" name="purpose" required>
-        <option value="">Pilih tujuan penggunaan</option>
-        <option value="Jump Shift">Jump Shift</option>
-        <option value="Transit">Transit</option>
-      </select>
-    </div>
-
-    <div class="field full">
-      <label for="proof">Upload Bukti Pendukung *</label>
-      <input id="proof" name="proof" type="file"
-        accept=".pdf,.jpg,.jpeg,.png" required>
-      <span class="hint">
-        Bukti boarding pass untuk Transit atau screenshot jadwal untuk
-        Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
-      </span>
-    </div>
-
-    <div class="field full">
-      <label for="family">Apakah membawa keluarga atau pendamping? *</label>
-      <select id="family" name="family" required>
-        <option value="">Pilih jawaban</option>
-        <option value="Ya">Ya</option>
-        <option value="Tidak">Tidak</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="checkIn">Tanggal dan Waktu Masuk *</label>
-      <input id="checkIn" name="checkIn"
-        type="datetime-local" required>
-    </div>
-
-    <div class="field">
-      <label for="checkOut">Tanggal dan Waktu Keluar *</label>
-      <input id="checkOut" name="checkOut"
-        type="datetime-local" required>
-    </div>
-
-    <div class="field">
-      <label for="roomType">Jenis Kamar *</label>
-      <select id="roomType" name="roomType" required>
-        <option value="">Pilih jenis kamar</option>
-        <option value="M">Kamar pria</option>
-        <option value="W">Kamar wanita</option>
-      </select>
-    </div>
-
-    
-<div class="field full">
-  <label for="bedCode">Tempat Tidur Tersedia *</label>
-  <select id="bedCode" name="bedCode" required>
-    <option value="">Pilih tanggal dan jenis kamar terlebih dahulu</option>
-  </select>
-  <span class="hint">
-    Pilihan akan diperbarui berdasarkan jadwal dan jenis kamar.
-  </span>
-</div>
-
-
-    <div class="field full">
-      <label for="guestCount">Jumlah Orang yang Menginap *</label>
-      <select id="guestCount" name="guestCount" required>
-        <option value="">Pilih jumlah orang</option>
-        <option value="1">1 orang</option>
-      </select>
-    </div>
-    
-<div class="field full" id="companionNamesField" style="display: none;">
-  <label for="companionNames">Nama Pendamping</label>
-  <textarea
-    id="companionNames"
-    name="companionNames"
-    rows="3"
-    placeholder="Tulis nama lengkap setiap pendamping, satu nama per baris"
-  ></textarea>
-  <small>Isi nama pendamping sesuai jumlah orang yang ikut menginap.</small>
-</div>
-
-
-    <div class="field full">
-      <label for="notes">Catatan Tambahan</label>
-      <textarea id="notes" name="notes"
-        placeholder="Catatan jika diperlukan"></textarea>
-    </div>
-
-  </div>
-
-  <button type="submit">Lanjutkan Pemesanan</button>
-</form>
-      </section>
-
-      <aside>
-        <div class="side-card">
-          <h3>Informasi Pemesanan</h3>
-          <p>Pengajuan baru akan dikonfirmasi setelah ketersediaan tempat tidur dan jadwal menginap berhasil diperiksa oleh sistem.</p>
-        </div>
-
-        <div class="card">
-          <h2>Alur Layanan</h2>
-
-          <div class="feature">
-            <div class="feature-icon">📝</div>
-            <div>
-              <strong>1. Isi formulir</strong>
-              <span>Masukkan jadwal dan kebutuhan menginap.</span>
-            </div>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="guestName">
+              Nama Lengkap Pemesan <span class="required">*</span>
+            </label>
+            <input
+              id="guestName"
+              name="guestName"
+              type="text"
+              maxlength="150"
+              autocomplete="name"
+              required
+            >
           </div>
 
-          <div class="feature">
-            <div class="feature-icon">🛏️</div>
-            <div>
-              <strong>2. Cek ketersediaan</strong>
-              <span>Tempat tidur harus tersedia pada jadwal pilihan.</span>
-            </div>
+          <div class="field">
+            <label for="nip">
+              NIP <span class="required">*</span>
+            </label>
+            <input
+              id="nip"
+              name="nip"
+              type="text"
+              maxlength="40"
+              autocomplete="off"
+              required
+            >
           </div>
 
-          <div class="feature">
-            <div class="feature-icon">✓</div>
-            <div>
-              <strong>3. Konfirmasi</strong>
-              <span>Status pemesanan ditampilkan setelah sistem terhubung.</span>
-            </div>
+          <div class="field">
+            <label for="phone">
+              Nomor Telepon <span class="required">*</span>
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              maxlength="30"
+              autocomplete="tel"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="workUnit">
+              Unit Kerja <span class="required">*</span>
+            </label>
+            <input
+              id="workUnit"
+              name="workUnit"
+              type="text"
+              maxlength="150"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="echelon">
+              Eselon/Jabatan <span class="required">*</span>
+            </label>
+            <input
+              id="echelon"
+              name="echelon"
+              type="text"
+              maxlength="100"
+              required
+            >
+          </div>
+
+          <div class="field full">
+            <label for="purpose">
+              Keperluan Menginap <span class="required">*</span>
+            </label>
+            <select id="purpose" name="purpose" required>
+              <option value="">Pilih keperluan</option>
+              <option value="Jump Shift">Jump Shift</option>
+              <option value="Transit">Transit</option>
+            </select>
           </div>
         </div>
-      </aside>
-    </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Jadwal dan Kamar</legend>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="checkIn">
+              Waktu Check-in <span class="required">*</span>
+            </label>
+            <input
+              id="checkIn"
+              name="checkIn"
+              type="datetime-local"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="checkOut">
+              Waktu Check-out <span class="required">*</span>
+            </label>
+            <input
+              id="checkOut"
+              name="checkOut"
+              type="datetime-local"
+              required
+            >
+          </div>
+
+          <div class="field full">
+            <label for="roomType">
+              Jenis Kamar <span class="required">*</span>
+            </label>
+            <select id="roomType" name="roomType" required>
+              <option value="">Pilih jenis kamar</option>
+              <option value="M">Kamar Pria</option>
+              <option value="W">Kamar Wanita</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Data Penghuni</legend>
+
+        <div class="form-grid">
+          <div class="field full">
+            <label for="family">
+              Apakah membawa keluarga atau pendamping?
+              <span class="required">*</span>
+            </label>
+            <select id="family" name="family" required>
+              <option value="">Pilih jawaban</option>
+              <option value="Tidak">Tidak</option>
+              <option value="Ya">Ya</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="guestCount">
+              Jumlah Orang yang Menginap
+              <span class="required">*</span>
+            </label>
+            <select id="guestCount" name="guestCount" required disabled>
+              <option value="">Pilih jawaban pendamping terlebih dahulu</option>
+            </select>
+            <span class="hint">
+              Jumlah ini mencakup pemesan dan seluruh pendamping.
+              Maksimal 8 penghuni per pemesanan.
+            </span>
+          </div>
+
+          <div class="field full" id="companionNamesField" hidden>
+            <label for="companionNames">
+              Nama Pendamping <span class="required">*</span>
+            </label>
+            <textarea
+              id="companionNames"
+              name="companionNames"
+              rows="4"
+              maxlength="1200"
+              placeholder="Tulis satu nama lengkap per baris"
+            ></textarea>
+            <span class="hint" id="companionNamesHint">
+              Masukkan satu nama untuk setiap pendamping, tanpa memasukkan
+              nama pemesan lagi.
+            </span>
+          </div>
+
+          <div class="field full">
+            <span class="field-label">
+              Pilih Tempat Tidur
+              <span class="required">*</span>
+            </span>
+
+            <div id="bedOptions" class="bed-options">
+              <div class="bed-message">
+                Pilih tanggal, waktu, dan jenis kamar terlebih dahulu.
+              </div>
+            </div>
+
+            <div id="bedSelectionHint" class="bed-status" aria-live="polite">
+              Belum ada tempat tidur yang dipilih.
+            </div>
+
+            <span class="hint">
+              Pilih tepat satu tempat tidur untuk setiap penghuni.
+              Ketersediaan diperiksa berdasarkan jadwal dan jenis kamar.
+            </span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Dokumen Persyaratan</legend>
+
+        <div class="form-grid">
+          <div class="field full">
+            <label for="proof">
+              Unggah Dokumen Persyaratan
+              <span class="required">*</span>
+            </label>
+            <input
+              id="proof"
+              name="proof"
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+              required
+            >
+            <span class="hint">
+              Format PDF, JPG, JPEG, atau PNG. Maksimal 10 MB.
+            </span>
+          </div>
+        </div>
+      </fieldset>
+
+      <button id="submitButton" class="submit-button" type="submit">
+        Kirim Pemesanan
+      </button>
+
+      <div
+        id="formMessage"
+        class="form-message"
+        role="status"
+        aria-live="polite"
+      ></div>
+    </form>
   </main>
 
-  <footer>
-    Sanggraloka Booking · Versi pengembangan
+  <footer class="site-footer">
+    <div class="footer-inner">
+      SANGGRALOKA · Formulir Pemesanan Penginapan
+    </div>
   </footer>
-  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-"use strict";
 
-// ===== KONFIGURASI SUPABASE =====
-const SUPABASE_URL = "https://kvvpqaxlopsyzuhiwjyq.supabase.co";
+  <!-- Pustaka Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-// Pertahankan publishable key asli dari proyek Supabase kamu.
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ucMXpeptp-lwtzCRQt8ntg_EskkEJmN";
+  <!-- Pustaka pembuat PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
-const form = document.getElementById("bookingForm");
-const checkIn = document.getElementById("checkIn");
-const checkOut = document.getElementById("checkOut");
-const roomType = document.getElementById("roomType");
-const bedCode = document.getElementById("bedCode");
-const proof = document.getElementById("proof");
-const family = document.getElementById("family");
-const guestCount = document.getElementById("guestCount");
-const companionNamesField = document.getElementById("companionNamesField");
-const companionNames = document.getElementById("companionNames");
+  <script>
+    "use strict";
 
-const submitButton = form.querySelector('button[type="submit"]');
+    // =========================================================
+    // 1. KONFIGURASI SUPABASE
+    // =========================================================
 
-let supabaseClient = null;
-let bedRequestNumber = 0;
+    const SUPABASE_URL =
+      "https://kvvpqaxlopsyzuhiwjyq.supabase.co";
 
-// ===== INISIALISASI =====
-try {
-  if (
-    !window.supabase ||
-    !SUPABASE_PUBLISHABLE_KEY ||
-    SUPABASE_PUBLISHABLE_KEY === "GANTI_DENGAN_PUBLISHABLE_KEY_ASLI"
-  ) {
-    throw new Error("Konfigurasi Supabase belum diisi dengan benar.");
-  }
+    // Ganti hanya nilai di bawah dengan publishable key milikmu.
+    // Jangan gunakan service_role key di website publik.
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Ojdws-K2iOWVBi82LcwNBg_G2jeyn8E";
 
-  supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-} catch (error) {
-  console.error("Inisialisasi Supabase gagal:", error);
-}
+    const STORAGE_BUCKET = "booking-proofs";
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const MAX_OCCUPANTS = 8;
 
-// ===== TANGGAL MINIMUM =====
-function localDateTimeValue(date) {
-  const localDate = new Date(
-    date.getTime() - date.getTimezoneOffset() * 60000
-  );
-  return localDate.toISOString().slice(0, 16);
-}
+    let supabaseClient = null;
+    let bedRequestNumber = 0;
+    let isSubmitting = false;
 
-function setMinimumDates() {
-  const minimumDate = localDateTimeValue(new Date());
+    // =========================================================
+    // 2. REFERENSI ELEMEN FORM
+    // =========================================================
 
-  checkIn.min = minimumDate;
-  checkOut.min = checkIn.value || minimumDate;
-}
+    const form = document.getElementById("bookingForm");
+    const guestName = document.getElementById("guestName");
+    const nip = document.getElementById("nip");
+    const workUnit = document.getElementById("workUnit");
+    const echelon = document.getElementById("echelon");
+    const phone = document.getElementById("phone");
+    const purpose = document.getElementById("purpose");
 
-setMinimumDates();
+    const checkIn = document.getElementById("checkIn");
+    const checkOut = document.getElementById("checkOut");
+    const roomType = document.getElementById("roomType");
 
-// ===== PENDAMPING =====
-function updateCompanionField() {
-  const count = Number(guestCount.value || 1);
-  const needsCompanionNames = family.value === "Ya" && count > 1;
+    const family = document.getElementById("family");
+    const guestCount = document.getElementById("guestCount");
+    const companionNamesField =
+      document.getElementById("companionNamesField");
+    const companionNames = document.getElementById("companionNames");
 
-  companionNamesField.style.display =
-    needsCompanionNames ? "block" : "none";
+    const proof = document.getElementById("proof");
+    const bedOptions = document.getElementById("bedOptions");
+    const bedSelectionHint =
+      document.getElementById("bedSelectionHint");
 
-  companionNames.required = needsCompanionNames;
+    const submitButton = document.getElementById("submitButton");
+    const formMessage = document.getElementById("formMessage");
 
-  if (!needsCompanionNames) {
-    companionNames.value = "";
-  }
-}
+    // =========================================================
+    // 3. INISIALISASI
+    // =========================================================
 
-family.addEventListener("change", updateCompanionField);
-guestCount.addEventListener("change", updateCompanionField);
-updateCompanionField();
-
-// ===== PEMBERSIHAN PILIHAN TEMPAT TIDUR =====
-function resetBedOptions(message) {
-  bedCode.innerHTML = "";
-
-  const option = document.createElement("option");
-  option.value = "";
-  option.textContent = message;
-
-  bedCode.appendChild(option);
-  bedCode.disabled = true;
-}
-
-function validStayDates() {
-  if (!checkIn.value || !checkOut.value) {
-    return false;
-  }
-
-  const start = new Date(checkIn.value);
-  const end = new Date(checkOut.value);
-
-  return (
-    !Number.isNaN(start.getTime()) &&
-    !Number.isNaN(end.getTime()) &&
-    start > new Date() &&
-    end > start
-  );
-}
-
-// ===== MEMUAT TEMPAT TIDUR TERSEDIA =====
-async function loadAvailableBeds() {
-  const requestNumber = ++bedRequestNumber;
-
-  resetBedOptions("Memeriksa ketersediaan...");
-
-  if (!checkIn.value || !checkOut.value || !roomType.value) {
-    resetBedOptions(
-      "Pilih tanggal dan jenis kamar terlebih dahulu"
-    );
-    return;
-  }
-
-  if (!validStayDates()) {
-    resetBedOptions(
-      "Periksa kembali tanggal masuk dan tanggal keluar"
-    );
-    return;
-  }
-
-  if (!supabaseClient) {
-    resetBedOptions("Koneksi sistem belum siap");
-    return;
-  }
-
-  try {
-    const { data, error } = await supabaseClient.rpc(
-      "get_available_beds",
-      {
-        p_planned_check_in: new Date(checkIn.value).toISOString(),
-        p_planned_check_out: new Date(checkOut.value).toISOString()
+    function initializeSupabase() {
+      if (!window.supabase || !window.supabase.createClient) {
+        throw new Error(
+          "Pustaka Supabase gagal dimuat. Periksa koneksi internet."
+        );
       }
-    );
 
-    // Abaikan hasil permintaan lama jika pengguna sudah mengubah pilihan.
-    if (requestNumber !== bedRequestNumber) return;
+      if (
+        !SUPABASE_PUBLISHABLE_KEY ||
+        SUPABASE_PUBLISHABLE_KEY === "GANTI_DENGAN_PUBLISHABLE_KEY"
+      ) {
+        throw new Error(
+          "Publishable key Supabase belum diisi."
+        );
+      }
 
-    if (error) throw error;
-
-    const expectedRoomName =
-      roomType.value === "M" ? "Kamar Pria" : "Kamar Wanita";
-
-    const availableBeds = (data || []).filter((bed) => {
-      return (
-        bed.room_name === expectedRoomName &&
-        bed.bed_code
+      supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
       );
-    });
-
-    if (availableBeds.length === 0) {
-      resetBedOptions("Tidak ada tempat tidur tersedia");
-      return;
     }
 
-    bedCode.innerHTML = "";
+    function showMessage(message, type = "error") {
+      formMessage.textContent = message;
+      formMessage.className = "form-message show " + type;
+    }
 
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = "Pilih tempat tidur";
-    bedCode.appendChild(placeholder);
+    function clearMessage() {
+      formMessage.textContent = "";
+      formMessage.className = "form-message";
+    }
 
-    availableBeds.forEach((bed) => {
-      const option = document.createElement("option");
-      option.value = bed.bed_code;
+    function resetBedOptions(message) {
+      bedOptions.replaceChildren();
 
-      const position =
-        bed.bed_position === "upper" ? "Atas" : "Bawah";
+      const notice = document.createElement("div");
+      notice.className = "bed-message";
+      notice.textContent = message;
 
-      option.textContent = `${bed.bed_code} — ${position}`;
-      bedCode.appendChild(option);
-    });
+      bedOptions.appendChild(notice);
 
-    bedCode.disabled = false;
+      bedSelectionHint.textContent =
+        "Belum ada tempat tidur yang dipilih.";
+      bedSelectionHint.className = "bed-status";
+    }
 
-  } catch (error) {
-    if (requestNumber !== bedRequestNumber) return;
+    // =========================================================
+    // 4. WAKTU DAN VALIDASI TANGGAL
+    // =========================================================
 
-    console.error("Gagal mengambil tempat tidur:", error);
+    function getLocalDateTimeValue(date = new Date()) {
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
 
-    resetBedOptions("Gagal memeriksa ketersediaan. Coba lagi.");
-  }
-}
+      return localDate.toISOString().slice(0, 16);
+    }
 
-// Check-in berubah: sesuaikan batas check-out, lalu periksa ulang.
-checkIn.addEventListener("change", () => {
-  checkOut.min = checkIn.value || localDateTimeValue(new Date());
+    function setMinimumDates() {
+      const now = getLocalDateTimeValue();
 
-  if (checkOut.value && checkOut.value <= checkIn.value) {
-    checkOut.value = "";
-  }
+      checkIn.min = now;
+      checkOut.min = checkIn.value || now;
+    }
 
-  loadAvailableBeds();
-});
+    function validateDates() {
+      if (!checkIn.value || !checkOut.value) {
+        throw new Error(
+          "Tanggal dan waktu check-in serta check-out wajib diisi."
+        );
+      }
 
-checkOut.addEventListener("change", loadAvailableBeds);
-roomType.addEventListener("change", loadAvailableBeds);
+      const start = new Date(checkIn.value);
+      const end = new Date(checkOut.value);
+      const now = new Date();
 
-// Panggilan awal untuk menampilkan petunjuk.
-resetBedOptions("Pilih tanggal dan jenis kamar terlebih dahulu");
+      if (
+        Number.isNaN(start.getTime()) ||
+        Number.isNaN(end.getTime())
+      ) {
+        throw new Error("Tanggal atau waktu tidak valid.");
+      }
 
-// ===== PENGIRIMAN PEMESANAN =====
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+      if (start <= now) {
+        throw new Error(
+          "Waktu check-in harus berada di masa mendatang."
+        );
+      }
 
-  if (submitButton.disabled) return;
+      if (end <= start) {
+        throw new Error(
+          "Waktu check-out harus setelah waktu check-in."
+        );
+      }
 
-  if (!supabaseClient) {
-    alert("Koneksi Supabase belum siap. Periksa konfigurasi sistem.");
-    return;
-  }
+      return { start, end };
+    }
 
-  if (!form.reportValidity()) return;
+    function refreshAvailability() {
+      setMinimumDates();
+      clearMessage();
 
-  if (!validStayDates()) {
-    alert(
-      "Check-in harus di masa depan dan check-out harus setelah check-in."
-    );
-    return;
-  }
+      if (!checkIn.value || !checkOut.value || !roomType.value) {
+        resetBedOptions(
+          "Pilih tanggal, waktu, dan jenis kamar terlebih dahulu."
+        );
+        return;
+      }
 
-  if (!roomType.value || !bedCode.value || bedCode.disabled) {
-    alert("Silakan pilih tempat tidur yang tersedia.");
-    return;
-  }
+      try {
+        validateDates();
+      } catch (error) {
+        resetBedOptions(error.message);
+        return;
+      }
 
-  if (!proof.files || proof.files.length === 0) {
-    alert("Silakan pilih file bukti persyaratan.");
-    return;
-  }
+      loadAvailableBeds();
+    }
 
-  const file = proof.files[0];
-  const allowedTypes = [
-    "application/pdf",
-    "image/jpeg",
-    "image/png"
-  ];
+    // =========================================================
+    // 5. JUMLAH PENGHUNI DAN NAMA PENDAMPING
+    // =========================================================
 
-  if (!allowedTypes.includes(file.type)) {
-    alert("Berkas harus berformat PDF, JPG, JPEG, atau PNG.");
-    proof.value = "";
-    return;
-  }
+    function setGuestCountOptions() {
+      const previousValue = guestCount.value;
+      guestCount.replaceChildren();
 
-  if (file.size > 10 * 1024 * 1024) {
-    alert("Ukuran file bukti maksimal 10 MB.");
-    proof.value = "";
-    return;
-  }
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "Pilih jumlah orang";
+      guestCount.appendChild(placeholder);
 
-  const getValue = (id) =>
-    document.getElementById(id).value.trim();
+      if (family.value === "Tidak") {
+        const option = document.createElement("option");
+        option.value = "1";
+        option.textContent = "1 orang";
+        guestCount.appendChild(option);
+        guestCount.value = "1";
+        guestCount.disabled = false;
+        return;
+      }
 
-  const guestName = getValue("guestName");
-  const nip = getValue("nip");
-  const phone = getValue("phone");
-  const workUnit = getValue("workUnit");
-  const echelon = getValue("echelon");
-  const purpose = getValue("purpose");
+      if (family.value === "Ya") {
+        for (let count = 2; count <= MAX_OCCUPANTS; count++) {
+          const option = document.createElement("option");
+          option.value = String(count);
+          option.textContent = count + " orang";
+          guestCount.appendChild(option);
+        }
 
-  if (
-    !guestName ||
-    !nip ||
-    !phone ||
-    !workUnit ||
-    !echelon ||
-    !purpose
-  ) {
-    alert("Mohon lengkapi semua data wajib.");
-    return;
-  }
+        guestCount.disabled = false;
 
-  if (!["Jump Shift", "Transit"].includes(purpose)) {
-    alert("Tujuan penggunaan tidak valid.");
-    return;
-  }
+        if (
+          previousValue &&
+          Number(previousValue) >= 2 &&
+          Number(previousValue) <= MAX_OCCUPANTS
+        ) {
+          guestCount.value = previousValue;
+        }
 
-  if (Number(guestCount.value) !== 1) {
-    alert("Sistem saat ini hanya mendukung satu penghuni per pemesanan.");
-    return;
-  }
+        return;
+      }
 
-  // Simpan pilihan untuk memastikan data yang dikirim tidak berubah
-  // akibat pengguna mengubah formulir selama proses berjalan.
-  const selectedBedCode = bedCode.value;
-  const selectedRoomType = roomType.value;
-  const plannedCheckIn = new Date(checkIn.value);
-  const plannedCheckOut = new Date(checkOut.value);
+      guestCount.disabled = true;
+    }
 
-  submitButton.disabled = true;
-  submitButton.textContent = "Memproses...";
+    function updateCompanionField() {
+      setGuestCountOptions();
 
-  let uploadedPath = null;
+      const needsNames = family.value === "Ya";
 
-  try {
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    uploadedPath = `${crypto.randomUUID()}-${safeName}`;
-console.info("[SANGGRALOKA] Mulai unggah bukti");
-    const { error: uploadError } = await supabaseClient.storage
-      .from("booking-proofs")
-      .upload(uploadedPath, file, {
-        contentType: file.type,
-        upsert: false
+      companionNamesField.hidden = !needsNames;
+      companionNames.required = needsNames;
+
+      if (!needsNames) {
+        companionNames.value = "";
+      }
+
+      updateBedSelectionHint();
+    }
+
+    function getCompanionList() {
+      return companionNames.value
+        .split(/\r?\n/)
+        .map(name => name.trim())
+        .filter(Boolean);
+    }
+
+    function validateOccupants() {
+      if (!family.value) {
+        throw new Error(
+          "Pilih apakah membawa keluarga atau pendamping."
+        );
+      }
+
+      const count = Number(guestCount.value);
+
+      if (!Number.isInteger(count) || count < 1 || count > MAX_OCCUPANTS) {
+        throw new Error("Pilih jumlah penghuni yang valid.");
+      }
+
+      if (family.value === "Tidak" && count !== 1) {
+        throw new Error(
+          "Jika tidak membawa pendamping, jumlah penghuni harus 1 orang."
+        );
+      }
+
+      if (family.value === "Ya" && count < 2) {
+        throw new Error(
+          "Jika membawa pendamping, jumlah penghuni minimal 2 orang."
+        );
+      }
+
+      const names = getCompanionList();
+
+      if (family.value === "Ya" && names.length !== count - 1) {
+        throw new Error(
+          "Jumlah nama pendamping harus tepat " +
+          (count - 1) +
+          " nama untuk total " +
+          count +
+          " penghuni."
+        );
+      }
+
+      return {
+        count,
+        companions: names
+      };
+    }
+
+    // =========================================================
+    // 6. MEMUAT TEMPAT TIDUR YANG TERSEDIA
+    // =========================================================
+
+    async function loadAvailableBeds() {
+      const requestNumber = ++bedRequestNumber;
+
+      if (!supabaseClient) {
+        resetBedOptions("Supabase belum siap.");
+        return;
+      }
+
+      if (!checkIn.value || !checkOut.value || !roomType.value) {
+        resetBedOptions(
+          "Pilih tanggal, waktu, dan jenis kamar terlebih dahulu."
+        );
+        return;
+      }
+
+      let dates;
+
+      try {
+        dates = validateDates();
+      } catch (error) {
+        resetBedOptions(error.message);
+        return;
+      }
+
+      resetBedOptions("Sedang memeriksa ketersediaan tempat tidur...");
+
+      try {
+        const { data, error } = await supabaseClient.rpc(
+          "get_available_beds",
+          {
+            p_planned_check_in: dates.start.toISOString(),
+            p_planned_check_out: dates.end.toISOString()
+          }
+        );
+
+        if (requestNumber !== bedRequestNumber) {
+          return;
+        }
+
+        if (error) {
+          console.error("Gagal memeriksa tempat tidur:", error);
+
+          resetBedOptions(
+            "Gagal memeriksa ketersediaan. Silakan ubah tanggal atau muat ulang halaman."
+          );
+          return;
+        }
+
+        const expectedRoomName =
+          roomType.value === "M" ? "Kamar Pria" : "Kamar Wanita";
+
+        const availableBeds = (data || []).filter(bed =>
+          bed.room_name === expectedRoomName &&
+          bed.bed_code
+        );
+
+        bedOptions.replaceChildren();
+
+        if (availableBeds.length === 0) {
+          resetBedOptions(
+            "Tidak ada tempat tidur tersedia untuk kamar dan jadwal ini."
+          );
+          return;
+        }
+
+        availableBeds.forEach(bed => {
+          const label = document.createElement("label");
+          label.className = "bed-option";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = "bedCodes";
+          checkbox.value = bed.bed_code;
+          checkbox.addEventListener(
+            "change",
+            updateBedSelectionHint
+          );
+
+          const text = document.createElement("span");
+          text.textContent = bed.bed_code;
+
+          label.append(checkbox, text);
+          bedOptions.appendChild(label);
+        });
+
+        updateBedSelectionHint();
+      } catch (error) {
+        if (requestNumber !== bedRequestNumber) {
+          return;
+        }
+
+        console.error("Kesalahan memuat tempat tidur:", error);
+
+        resetBedOptions(
+          "Terjadi kesalahan saat memuat tempat tidur. Coba lagi."
+        );
+      }
+    }
+
+    function getSelectedBedCodes() {
+      return Array.from(
+        bedOptions.querySelectorAll(
+          'input[name="bedCodes"]:checked'
+        )
+      ).map(input => input.value);
+    }
+
+    function updateBedSelectionHint() {
+      const selected = getSelectedBedCodes();
+      const count = Number(guestCount.value);
+
+      if (!count) {
+        bedSelectionHint.textContent =
+          "Pilih jumlah penghuni terlebih dahulu.";
+        bedSelectionHint.className = "bed-status";
+        return;
+      }
+
+      const remaining = count - selected.length;
+
+      if (remaining === 0) {
+        bedSelectionHint.textContent =
+          "Jumlah tempat tidur sudah sesuai: " +
+          selected.length +
+          " dari " +
+          count +
+          ".";
+        bedSelectionHint.className = "bed-status success";
+        return;
+      }
+
+      if (remaining > 0) {
+        bedSelectionHint.textContent =
+          "Sudah dipilih " +
+          selected.length +
+          " dari " +
+          count +
+          " tempat tidur. Pilih " +
+          remaining +
+          " lagi.";
+        bedSelectionHint.className = "bed-status";
+        return;
+      }
+
+      bedSelectionHint.textContent =
+        "Pilihan terlalu banyak. Kurangi " +
+        Math.abs(remaining) +
+        " tempat tidur.";
+      bedSelectionHint.className = "bed-status error";
+    }
+
+    // =========================================================
+    // 7. VALIDASI DOKUMEN PERSYARATAN
+    // =========================================================
+
+    function validateProofFile() {
+      const file = proof.files[0];
+
+      if (!file) {
+        throw new Error("Dokumen persyaratan wajib diunggah.");
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        throw new Error(
+          "Ukuran dokumen melebihi batas 10 MB."
+        );
+      }
+
+      const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png"
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error(
+          "Format dokumen harus PDF, JPG, JPEG, atau PNG."
+        );
+      }
+
+      return file;
+    }
+
+    function createSafeFileName(fileName) {
+      const extensionMatch = fileName.match(/\.[a-zA-Z0-9]+$/);
+      const extension = extensionMatch
+        ? extensionMatch[0].toLowerCase()
+        : "";
+
+      return (
+        Date.now() +
+        "-" +
+        Math.random().toString(36).slice(2, 10) +
+        extension
+      );
+    }
+
+    async function uploadProofFile(file) {
+      const filePath = createSafeFileName(file.name);
+
+      const { data, error } = await supabaseClient.storage
+        .from(STORAGE_BUCKET)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type
+        });
+
+      if (error) {
+        console.error("Gagal mengunggah dokumen:", error);
+
+        throw new Error(
+          "Dokumen persyaratan gagal diunggah. Periksa koneksi dan izin Storage."
+        );
+      }
+
+      return data.path;
+    }
+
+    // =========================================================
+    // 8. PEMBUATAN BUKTI PEMESANAN PDF
+    // =========================================================
+
+    function formatDateTime(date) {
+      return date.toLocaleString("id-ID", {
+        dateStyle: "long",
+        timeStyle: "short"
+      });
+    }
+
+    function downloadBookingReceipt(details) {
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        throw new Error(
+          "Pemesanan berhasil, tetapi pustaka PDF gagal dimuat. Kode booking: " +
+          details.bookingCode
+        );
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4"
       });
 
-    if (uploadError) throw uploadError;
-console.info("[SANGGRALOKA] Mulai unggah bukti");
-    console.info("[SANGGRALOKA] Mulai menyimpan booking");
-    const { data, error } = await supabaseClient.rpc(
-      "create_public_booking",
-      {
-        p_requester_name: guestName,
-        p_requester_employee_id: nip,
-        p_requester_unit: workUnit,
-        p_requester_echelon: echelon,
-        p_requester_phone: phone,
-        p_purpose:
-          purpose === "Jump Shift" ? "jump_shift" : "transit",
-        p_planned_check_in: plannedCheckIn.toISOString(),
-        p_planned_check_out: plannedCheckOut.toISOString(),
-        p_requirement_reference: uploadedPath,
-        p_occupants: [
-          {
-            full_name: guestName,
-            is_primary_requester: true
-          }
-        ],
-        p_bed_codes: [selectedBedCode]
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 18;
+      const contentWidth = pageWidth - margin * 2;
+      let y = 20;
+
+      function writeLine(label, value) {
+        const safeValue =
+          value === undefined || value === null || value === ""
+            ? "-"
+            : String(value);
+
+        const lines = doc.splitTextToSize(
+          label + ": " + safeValue,
+          contentWidth
+        );
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(lines, margin, y);
+
+        y += lines.length * 5 + 3;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
       }
-    );
 
-    if (error) throw error;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(19);
+      doc.text("SANGGRALOKA", margin, y);
+      y += 9;
 
-    if (!data || data.success !== true) {
-      throw new Error(
-        data?.message || "Pemesanan tidak berhasil."
+      doc.setFontSize(14);
+      doc.text("BUKTI PENGAJUAN PEMESANAN", margin, y);
+      y += 7;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(
+        "Simpan dokumen ini sebagai referensi pengajuan.",
+        margin,
+        y
+      );
+      y += 9;
+
+      doc.setDrawColor(190, 205, 194);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 9;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("Informasi Pemesanan", margin, y);
+      y += 8;
+
+      writeLine("Kode Booking", details.bookingCode);
+      writeLine("Status", "Menunggu konfirmasi pengelola");
+      writeLine("Waktu Pengajuan", formatDateTime(new Date()));
+      writeLine("Nama Pemesan", details.guestName);
+      writeLine("NIP", details.nip);
+      writeLine("Unit Kerja", details.workUnit);
+      writeLine("Eselon/Jabatan", details.echelon);
+      writeLine("Nomor Telepon", details.phone);
+      writeLine("Keperluan", details.purpose);
+      writeLine("Jenis Kamar", details.roomName);
+      writeLine("Check-in", formatDateTime(details.checkIn));
+      writeLine("Check-out", formatDateTime(details.checkOut));
+      writeLine("Jumlah Penghuni", details.occupants.length + " orang");
+      writeLine("Tempat Tidur", details.bedCodes.join(", "));
+
+      y += 2;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("Daftar Penghuni", margin, y);
+      y += 8;
+
+      details.occupants.forEach((occupant, index) => {
+        writeLine(
+          "Penghuni " + (index + 1),
+          occupant.full_name +
+            (occupant.is_primary_requester ? " (Pemesan)" : " (Pendamping)")
+        );
+      });
+
+      y += 4;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+
+      const disclaimer =
+        "Dokumen ini merupakan bukti pengajuan yang dibuat dari data " +
+        "formulir. Dokumen ini bukan surat persetujuan atau jaminan " +
+        "bahwa pemesanan telah disetujui. Silakan gunakan kode booking " +
+        "untuk berkomunikasi dengan pengelola.";
+
+      const disclaimerLines = doc.splitTextToSize(
+        disclaimer,
+        contentWidth
+      );
+
+      if (y + disclaimerLines.length * 4 > 280) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.text(disclaimerLines, margin, y);
+
+      doc.save(
+        "Bukti-Pemesanan-" + details.bookingCode + ".pdf"
       );
     }
 
-    alert(
-      "Pemesanan berhasil!\nKode booking: " +
-      data.booking_code
-    );
+    // =========================================================
+    // 9. PROSES PENGIRIMAN PEMESANAN
+    // =========================================================
 
-    form.reset();
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (isSubmitting) {
+        return;
+      }
+
+      clearMessage();
+
+      let file;
+      let dates;
+      let occupantData;
+
+      try {
+        if (!supabaseClient) {
+          initializeSupabase();
+        }
+
+        if (!form.reportValidity()) {
+          return;
+        }
+
+        dates = validateDates();
+        occupantData = validateOccupants();
+        file = validateProofFile();
+
+        const selectedBedCodes = getSelectedBedCodes();
+
+        if (selectedBedCodes.length !== occupantData.count) {
+          throw new Error(
+            "Jumlah tempat tidur yang dipilih harus tepat " +
+            occupantData.count +
+            ", sesuai jumlah penghuni."
+          );
+        }
+
+        if (
+          new Set(selectedBedCodes).size !== selectedBedCodes.length
+        ) {
+          throw new Error(
+            "Terdapat tempat tidur yang dipilih lebih dari sekali."
+          );
+        }
+
+        if (!roomType.value) {
+          throw new Error("Jenis kamar wajib dipilih.");
+        }
+
+        if (!purpose.value) {
+          throw new Error("Keperluan menginap wajib dipilih.");
+        }
+      } catch (error) {
+        showMessage(error.message || "Periksa kembali data formulir.");
+        return;
+      }
+
+      const selectedBedCodes = getSelectedBedCodes();
+      const selectedRoomType = roomType.value;
+      const selectedPurpose = purpose.value;
+      const selectedCheckIn = dates.start;
+      const selectedCheckOut = dates.end;
+
+      const occupants = [
+        {
+          full_name: guestName.value.trim(),
+          is_primary_requester: true
+        },
+        ...occupantData.companions.map(name => ({
+          full_name: name,
+          is_primary_requester: false
+        }))
+      ];
+
+      const bookingDetails = {
+        guestName: guestName.value.trim(),
+        nip: nip.value.trim(),
+        workUnit: workUnit.value.trim(),
+        echelon: echelon.value.trim(),
+        phone: phone.value.trim(),
+        purpose: selectedPurpose,
+        roomName:
+          selectedRoomType === "M" ? "Kamar Pria" : "Kamar Wanita",
+        checkIn: selectedCheckIn,
+        checkOut: selectedCheckOut,
+        occupants,
+        bedCodes: selectedBedCodes
+      };
+
+      isSubmitting = true;
+      submitButton.disabled = true;
+      submitButton.textContent = "Sedang memproses...";
+      showMessage(
+        "Sedang mengunggah dokumen dan menyimpan pemesanan. Jangan tutup halaman ini.",
+        "success"
+      );
+
+      let uploadedPath = null;
+      let bookingWasCreated = false;
+      let bookingCode = null;
+
+      try {
+        // Unggah dokumen persyaratan ke Storage.
+        uploadedPath = await uploadProofFile(file);
+
+        // Simpan pemesanan melalui fungsi database yang sudah ada.
+        const { data, error } = await supabaseClient.rpc(
+          "create_public_booking",
+          {
+            p_requester_name: bookingDetails.guestName,
+            p_requester_employee_id: bookingDetails.nip,
+            p_requester_unit: bookingDetails.workUnit,
+            p_requester_echelon: bookingDetails.echelon,
+            p_requester_phone: bookingDetails.phone,
+            p_purpose:
+              selectedPurpose === "Jump Shift"
+                ? "jump_shift"
+                : "transit",
+            p_planned_check_in: selectedCheckIn.toISOString(),
+            p_planned_check_out: selectedCheckOut.toISOString(),
+            p_requirement_reference: uploadedPath,
+            p_occupants: occupants,
+            p_bed_codes: selectedBedCodes
+          }
+        );
+
+        if (error) {
+          console.error("Pemesanan gagal:", error);
+          throw new Error(
+            error.message ||
+            "Pemesanan gagal disimpan oleh sistem."
+          );
+        }
+
+        if (!data || data.success === false || !data.booking_code) {
+          console.error("Respons pemesanan tidak sesuai:", data);
+
+          throw new Error(
+            "Sistem tidak mengembalikan kode booking. Periksa status pemesanan sebelum mencoba lagi."
+          );
+        }
+
+        bookingWasCreated = true;
+        bookingCode = data.booking_code;
+
+        // Unduh PDF hanya setelah kode booking diterima.
+        try {
+          downloadBookingReceipt({
+            ...bookingDetails,
+            bookingCode
+          });
+
+          showMessage(
+            "Pemesanan berhasil! Kode booking: " +
+            bookingCode +
+            ". Bukti PDF telah diminta untuk diunduh. Simpan file tersebut.",
+            "success"
+          );
+        } catch (pdfError) {
+          console.error("PDF gagal dibuat:", pdfError);
+
+          showMessage(
+            "Pemesanan berhasil, tetapi PDF tidak dapat dibuat otomatis. " +
+            "Simpan kode booking ini: " +
+            bookingCode +
+            ". Jangan kirim pemesanan ulang.",
+            "success"
+          );
+        }
+
+        // Reset form hanya setelah pemesanan berhasil disimpan.
+        form.reset();
+        updateCompanionField();
+        setMinimumDates();
+        resetBedOptions(
+          "Pilih tanggal, waktu, dan jenis kamar untuk memeriksa ketersediaan."
+        );
+      } catch (error) {
+        console.error("Kesalahan pemesanan:", error);
+
+        if (bookingWasCreated) {
+          showMessage(
+            "Pemesanan telah tersimpan dengan kode " +
+            bookingCode +
+            ". Jangan kirim ulang. Jika PDF belum terunduh, hubungi pengelola untuk bantuan.",
+            "success"
+          );
+        } else {
+          showMessage(
+            (error.message || "Terjadi kesalahan saat memproses pemesanan.") +
+            (uploadedPath
+              ? " Dokumen mungkin sudah terunggah meskipun pemesanan belum berhasil. Periksa status sebelum mencoba lagi."
+              : "")
+          );
+        }
+      } finally {
+        isSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.textContent = "Kirim Pemesanan";
+      }
+    });
+
+    // =========================================================
+    // 10. EVENT LISTENER DAN PEMUATAN AWAL
+    // =========================================================
+
+    family.addEventListener("change", () => {
+      updateCompanionField();
+      refreshAvailability();
+    });
+
+    guestCount.addEventListener("change", updateBedSelectionHint);
+
+    checkIn.addEventListener("change", () => {
+      setMinimumDates();
+      refreshAvailability();
+    });
+
+    checkOut.addEventListener("change", refreshAvailability);
+    roomType.addEventListener("change", refreshAvailability);
+
+    proof.addEventListener("change", () => {
+      clearMessage();
+
+      const file = proof.files[0];
+
+      if (file && file.size > MAX_FILE_SIZE) {
+        showMessage("Ukuran dokumen melebihi batas 10 MB.");
+        proof.value = "";
+      }
+    });
+
+    try {
+      initializeSupabase();
+    } catch (error) {
+      console.error("Inisialisasi gagal:", error);
+      showMessage(error.message);
+    }
+
     updateCompanionField();
     setMinimumDates();
+
     resetBedOptions(
-      "Pilih tanggal dan jenis kamar terlebih dahulu"
+      "Pilih tanggal, waktu, dan jenis kamar untuk memeriksa ketersediaan."
     );
-
-  } catch (error) {
-    console.error("Pemesanan gagal:", error);
-
-    alert(
-      "Pemesanan gagal: " +
-      (error.message || "Terjadi kesalahan.")
-    );
-
-    if (uploadedPath) {
-      alert(
-        "Berkas bukti mungkin sudah terunggah meskipun pemesanan gagal. " +
-        "Jangan mengirim berulang kali sebelum statusnya diperiksa."
-      );
-    }
-  } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = "Lanjutkan Pemesanan";
-  }
-});
-</script>
+  </script>
 </body>
 </html>
