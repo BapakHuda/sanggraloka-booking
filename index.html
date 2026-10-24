@@ -760,7 +760,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     uploadedPath = `${crypto.randomUUID()}-${safeName}`;
-
+console.info("[SANGGRALOKA] Mulai unggah bukti");
     const { error: uploadError } = await supabaseClient.storage
       .from("booking-proofs")
       .upload(uploadedPath, file, {
@@ -769,7 +769,8 @@ form.addEventListener("submit", async (event) => {
       });
 
     if (uploadError) throw uploadError;
-
+console.info("[SANGGRALOKA] Mulai unggah bukti");
+    console.info("[SANGGRALOKA] Mulai menyimpan booking");
     const { data, error } = await supabaseClient.rpc(
       "create_public_booking",
       {
