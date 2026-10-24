@@ -472,6 +472,7 @@
 
   <!-- ============ SCRIPT ============ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script>
   "use strict";
 
@@ -811,6 +812,100 @@
   /* ============================================================
    * 8. SUBMIT PEMESANAN
    * ============================================================ */
+    
+function downloadBookingReceipt(details) {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    throw new Error("Pustaka PDF belum berhasil dimuat.");
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+  const margin = 18;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let y = 22;
+
+  function formatDate(value) {
+    return new Date(value).toLocaleString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      dateStyle: "long",
+      timeStyle: "short"
+    }) + " WIB";
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(17);
+  doc.text("BUKTI PEMESANAN", margin, y);
+
+  y += 8;
+  doc.setFontSize(13);
+  doc.text("SANGGRALOKA", margin, y);
+
+  y += 10;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+
+  const lines = [
+    `Kode booking: ${details.bookingCode}`,
+    `Tanggal dibuat: ${formatDate(new Date())}`,
+    "",
+    "DATA PEMESAN",
+    `Nama: ${details.guestName}`,
+    `NIP: ${details.nip}`,
+    `Unit kerja: ${details.workUnit}`,
+    `Eselon: ${details.echelon}`,
+    `Keperluan: ${details.purpose}`,
+    "",
+    "DETAIL MENGINAP",
+    `Check-in: ${formatDate(details.checkIn)}`,
+    `Check-out: ${formatDate(details.checkOut)}`,
+    `Jenis kamar: ${details.roomName}`,
+    `Jumlah penghuni: ${details.occupants.length} orang`,
+    "",
+    "DAFTAR PENGHUNI",
+    ...details.occupants.map((name, index) => `${index + 1}. ${name}`),
+    "",
+    `Tempat tidur: ${details.bedCodes.join(", ")}`,
+    "",
+    "Simpan dokumen ini dan gunakan kode booking saat menghubungi pengelola.",
+    "Bukti ini menunjukkan pengajuan berhasil dikirim. Persetujuan akhir mengikuti status pemesanan pada sistem."
+  ];
+
+  for (const line of lines) {
+    const wrapped = doc.splitTextToSize(
+      line,
+      pageWidth - margin * 2
+    );
+
+    const lineHeight = 5;
+    const neededHeight = Math.max(1, wrapped.length) * lineHeight;
+
+    if (y + neededHeight > pageHeight - margin) {
+      doc.addPage();
+      y = 20;
+    }
+
+    if (
+      line === "DATA PEMESAN" ||
+      line === "DETAIL MENGINAP" ||
+      line === "DAFTAR PENGHUNI"
+    ) {
+      doc.setFont("helvetica", "bold");
+    } else {
+      doc.setFont("helvetica", "normal");
+    }
+
+    if (wrapped.length > 0) {
+      doc.text(wrapped, margin, y);
+    }
+
+    y += neededHeight + 2;
+  }
+
+  doc.save(`Bukti-Pemesanan-${details.bookingCode}.pdf`);
+}
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -977,7 +1072,38 @@
       }
 
       /* ---- 3) Sukses ---- */
-      alert("Pemesanan berhasil!\nKode booking: " + data.booking_code);
+      /* ---- 3) Sukses + buat bukti PDF ---- */
+try {
+  downloadBookingReceipt({
+    bookingCode: data.booking_code,
+    guestName: guestName,
+    nip: nip,
+    workUnit: workUnit,
+    echelon: echelon,
+    purpose: purpose === "Jump Shift" ? "Jump Shift" : "Transit",
+    checkIn: plannedCheckIn,
+    checkOut: plannedCheckOut,
+    roomName: roomType.value === "M"
+      ? "Kamar Pria"
+      : "Kamar Wanita",
+    occupants: [guestName, ...companionList],
+    bedCodes: selectedBedCodes
+  });
+
+  alert(
+    "Pemesanan berhasil!\n" +
+    "Kode booking: " + data.booking_code +
+    "\nBukti pemesanan PDF sedang diunduh."
+  );
+} catch (pdfError) {
+  console.error("[SANGGRALOKA] Gagal membuat PDF:", pdfError);
+
+  alert(
+    "Pemesanan berhasil!\n" +
+    "Kode booking: " + data.booking_code +
+    "\nPDF gagal dibuat. Simpan kode booking ini."
+  );
+}
 
       // Reset seluruh form ke kondisi awal
       form.reset();
