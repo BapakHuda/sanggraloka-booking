@@ -282,133 +282,168 @@
         <p class="subheading">Lengkapi informasi berikut dengan benar.</p>
 
         <form id="bookingForm">
-          <div class="form-grid">
 
-            <!-- Data pemesan -->
-            <div class="field full">
-              <label for="guestName">Nama Lengkap Pegawai *</label>
-              <input id="guestName" name="guestName" type="text"
-                placeholder="Masukkan nama lengkap" required>
-            </div>
+<div class="booking-step" data-step="1">
+  <h3>01. Jadwal Menginap</h3>
+  <p>Pilih tanggal dan waktu menginap.</p>
 
-            <div class="field">
-              <label for="nip">NIP *</label>
-              <input id="nip" name="nip" type="text"
-                placeholder="Masukkan NIP" required>
-            </div>
+  <div class="form-grid">
+    <div class="field">
+      <label for="checkIn">Tanggal dan Waktu Masuk *</label>
+      <input id="checkIn" name="checkIn" type="datetime-local" required>
+    </div>
 
-            <div class="field">
-              <label for="phone">No. Handphone *</label>
-              <input id="phone" name="phone" type="tel"
-                placeholder="Contoh: 08xxxxxxxxxx" required>
-            </div>
+    <div class="field">
+      <label for="checkOut">Tanggal dan Waktu Keluar *</label>
+      <input id="checkOut" name="checkOut" type="datetime-local" required>
+    </div>
+  </div>
 
-            <div class="field full">
-              <label for="echelon">Unit Eselon I *</label>
-              <select id="echelon" name="echelon" required>
-                <option value="">Pilih Unit Eselon I</option>
-                <option>Direktorat Jenderal Bea dan Cukai</option>
-                <option>Direktorat Jenderal Pajak</option>
-                <option>Inspektorat Jenderal</option>
-                <option>Sekretariat Jenderal</option>
-                <option>Direktorat Jenderal Anggaran</option>
-                <option>Direktorat Jenderal Strategi Ekonomi dan Fiskal</option>
-                <option>Direktorat Jenderal Perbendaharaan</option>
-                <option>Direktorat Jenderal Kekayaan Negara</option>
-                <option>Direktorat Jenderal Perimbangan Keuangan</option>
-                <option>Direktorat Jenderal Pengelolaan Pembiayaan dan Risiko</option>
-                <option>Direktorat Jenderal Stabilitas dan Pengembangan Sektor Keuangan</option>
-                <option>Badan Pendidikan dan Pelatihan Keuangan</option>
-              </select>
-            </div>
+  <button type="button" class="next-step">Lanjutkan</button>
+</div>
 
-            <div class="field full">
-              <label for="workUnit">Instansi/Unit Kerja *</label>
-              <input id="workUnit" name="workUnit" type="text"
-                placeholder="Contoh: KPU BC Soekarno-Hatta" required>
-            </div>
+<div class="booking-step" data-step="2" hidden>
+  <h3>02. Jumlah Orang dan Tempat Tidur</h3>
+  <p>Tentukan penghuni dan pilih tempat tidur yang tersedia.</p>
 
-            <!-- Tujuan & bukti pendukung -->
-            <div class="field full">
-              <label for="purpose">Tujuan Penggunaan *</label>
-              <select id="purpose" name="purpose" required>
-                <option value="">Pilih tujuan penggunaan</option>
-                <option value="Jump Shift">Jump Shift</option>
-                <option value="Transit">Transit</option>
-              </select>
-            </div>
+  <div class="form-grid">
+    <div class="field full">
+      <label for="family">Apakah membawa keluarga atau pendamping? *</label>
+      <select id="family" name="family" required>
+        <option value="">Pilih jawaban</option>
+        <option value="Ya">Ya</option>
+        <option value="Tidak">Tidak</option>
+      </select>
+    </div>
 
-            <div class="field full">
-              <label for="proof">Upload Bukti Pendukung *</label>
-              <input id="proof" name="proof" type="file"
-                accept=".pdf,.jpg,.jpeg,.png" required>
-              <span class="hint">
-                Bukti boarding pass untuk Transit atau screenshot jadwal untuk
-                Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
-              </span>
-            </div>
+    <div class="field full">
+      <label for="guestGender">Jenis Kelamin Pemesan *</label>
+      <select id="guestGender" name="guestGender" required>
+        <option value="">Pilih jenis kelamin</option>
+        <option value="male">Laki-laki</option>
+        <option value="female">Perempuan</option>
+      </select>
+    </div>
 
-                        <!-- Data pendamping -->
-            <div class="field full">
-              <label for="family">Apakah membawa keluarga atau pendamping? *</label>
-              <select id="family" name="family" required>
-                <option value="">Pilih jawaban</option>
-                <option value="Ya">Ya</option>
-                <option value="Tidak">Tidak</option>
-              </select>
-            </div>
+    <div class="field full">
+      <label for="guestCount">Jumlah Orang yang Menginap *</label>
+      <select id="guestCount" name="guestCount" required>
+        <option value="">Pilih jumlah orang</option>
+      </select>
+      <span class="hint">Jumlah mencakup pemesan dan seluruh pendamping.</span>
+    </div>
 
-            <div class="field">
-              <label for="checkIn">Tanggal dan Waktu Masuk *</label>
-              <input id="checkIn" name="checkIn" type="datetime-local" required>
-            </div>
+    <div class="field full" id="companionNamesField" style="display:none;">
+      <label>Nama dan Jenis Kelamin Pendamping *</label>
+      <div id="companionList"></div>
+      <small class="hint">Isi nama dan jenis kelamin setiap pendamping.</small>
+    </div>
 
-            <div class="field">
-              <label for="checkOut">Tanggal dan Waktu Keluar *</label>
-              <input id="checkOut" name="checkOut" type="datetime-local" required>
-            </div>
+    <div class="field full">
+      <label>Tempat Tidur Tersedia *</label>
+      <div id="bedOptions">
+        <p class="hint">Lengkapi jadwal dan data penghuni terlebih dahulu.</p>
+      </div>
+      <small class="hint" id="bedSelectionHint">
+        Setiap penghuni harus mendapat satu tempat tidur.
+      </small>
+    </div>
+  </div>
 
-            <div class="field full">
-              <label>Jenis Kelamin Pemesan *</label>
-              <select id="guestGender" name="guestGender" required>
-                <option value="">Pilih jenis kelamin</option>
-                <option value="male">Laki-laki</option>
-                <option value="female">Perempuan</option>
-              </select>
-            </div>
+  <button type="button" class="previous-step">Kembali</button>
+  <button type="button" class="next-step">Lanjutkan</button>
+</div>
 
-            <div class="field full">
-              <label for="guestCount">Jumlah Orang yang Menginap *</label>
-              <select id="guestCount" name="guestCount" required>
-                <option value="">Pilih jumlah orang</option>
-              </select>
-              <span class="hint">Jumlah mencakup pemesan dan seluruh pendamping.</span>
-            </div>
+<div class="booking-step" data-step="3" hidden>
+  <h3>03. Data Pemesan</h3>
+  <p>Lengkapi identitas pegawai dan persyaratan pemesanan.</p>
 
-            <div class="field full" id="companionNamesField" style="display:none;">
-              <label>Nama dan Jenis Kelamin Pendamping *</label>
-              <div id="companionList"></div>
-              <small class="hint">Isi nama dan jenis kelamin setiap pendamping.</small>
-            </div>
+  <div class="form-grid">
+    <div class="field full">
+      <label for="guestName">Nama Lengkap Pegawai *</label>
+      <input id="guestName" name="guestName" type="text"
+        placeholder="Masukkan nama lengkap" required>
+    </div>
 
-            <div class="field full">
-              <label>Tempat Tidur Tersedia *</label>
-              <div id="bedOptions">
-                <p class="hint">Pilih tanggal dan data penghuni terlebih dahulu.</p>
-              </div>
-              <small class="hint" id="bedSelectionHint">
-                Setiap orang harus mendapat satu tempat tidur sesuai jenis kelaminnya.
-              </small>
-            </div>
-            <div class="field full">
-              <label for="notes">Catatan Tambahan</label>
-              <textarea id="notes" name="notes"
-                placeholder="Catatan jika diperlukan"></textarea>
-            </div>
+    <div class="field">
+      <label for="nip">NIP *</label>
+      <input id="nip" name="nip" type="text"
+        placeholder="Masukkan NIP" required>
+    </div>
 
-          </div>
+    <div class="field">
+      <label for="phone">No. Handphone *</label>
+      <input id="phone" name="phone" type="tel"
+        placeholder="Contoh: 08xxxxxxxxxx" required>
+    </div>
 
-          <button type="submit">Lanjutkan Pemesanan</button>
+    <div class="field full">
+      <label for="echelon">Unit Eselon I *</label>
+      <select id="echelon" name="echelon" required>
+        <option value="">Pilih Unit Eselon I</option>
+        <option>Direktorat Jenderal Bea dan Cukai</option>
+        <option>Direktorat Jenderal Pajak</option>
+        <option>Inspektorat Jenderal</option>
+        <option>Sekretariat Jenderal</option>
+        <option>Direktorat Jenderal Anggaran</option>
+        <option>Direktorat Jenderal Strategi Ekonomi dan Fiskal</option>
+        <option>Direktorat Jenderal Perbendaharaan</option>
+        <option>Direktorat Jenderal Kekayaan Negara</option>
+        <option>Direktorat Jenderal Perimbangan Keuangan</option>
+        <option>Direktorat Jenderal Pengelolaan Pembiayaan dan Risiko</option>
+        <option>Direktorat Jenderal Stabilitas dan Pengembangan Sektor Keuangan</option>
+        <option>Badan Pendidikan dan Pelatihan Keuangan</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label for="workUnit">Instansi/Unit Kerja *</label>
+      <input id="workUnit" name="workUnit" type="text"
+        placeholder="Contoh: KPU BC Soekarno-Hatta" required>
+    </div>
+
+    <div class="field full">
+      <label for="purpose">Tujuan Penggunaan *</label>
+      <select id="purpose" name="purpose" required>
+        <option value="">Pilih tujuan penggunaan</option>
+        <option value="Jump Shift">Jump Shift</option>
+        <option value="Transit">Transit</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label for="proof">Upload Bukti Pendukung *</label>
+      <input id="proof" name="proof" type="file"
+        accept=".pdf,.jpg,.jpeg,.png" required>
+      <span class="hint">
+        Bukti boarding pass untuk Transit atau screenshot jadwal untuk
+        Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
+      </span>
+    </div>
+
+    <div class="field full">
+      <label for="notes">Catatan Tambahan</label>
+      <textarea id="notes" name="notes"
+        placeholder="Catatan jika diperlukan"></textarea>
+    </div>
+  </div>
+
+  <button type="button" class="previous-step">Kembali</button>
+  <button type="button" class="next-step">Lanjutkan</button>
+</div>
+
+<div class="booking-step" data-step="4" hidden>
+  <h3>04. Konfirmasi Pemesanan</h3>
+  <p>Periksa kembali seluruh informasi sebelum mengirim pemesanan.</p>
+
+ <div id="bookingReview" class="booking-review">
+  <p class="hint">Ringkasan pemesanan akan ditampilkan di sini.</p>
+</div>
+
+  <button type="button" class="previous-step">Kembali</button>
+  <button type="submit">Konfirmasi Pemesanan</button>
+</div>
+
         </form>
       </section>
 
@@ -666,9 +701,6 @@
   });
     companionListContainer.addEventListener("change", loadAvailableBeds);
 
-document.getElementById("guestName").addEventListener(
-  "change",
-  loadAvailableBeds
 );
 
   updateCompanionField();
@@ -690,15 +722,35 @@ document.getElementById("guestName").addEventListener(
 
 function getOccupantsFromForm() {
   const occupants = [];
-  const requesterName = document.getElementById("guestName").value.trim();
+  const requesterName =
+    document.getElementById("guestName").value.trim();
 
-  if (requesterName && guestGender.value) {
+  if (guestGender.value) {
     occupants.push({
-      full_name: requesterName,
+      full_name: requesterName || "Pemesan",
       gender: guestGender.value,
       is_primary_requester: true
     });
   }
+
+  const names = companionListContainer.querySelectorAll(
+    'input[name="companionName"]'
+  );
+
+  const genders = companionListContainer.querySelectorAll(
+    'select[name="companionGender"]'
+  );
+
+  names.forEach((input, index) => {
+    occupants.push({
+      full_name: input.value.trim(),
+      gender: genders[index]?.value || "",
+      is_primary_requester: false
+    });
+  });
+
+  return occupants;
+}
 
   const names = companionListContainer.querySelectorAll(
     'input[name="companionName"]'
@@ -761,10 +813,13 @@ function getOccupantsFromForm() {
 
       const occupants = getOccupantsFromForm();
 
-      if (occupants.length !== Number(guestCount.value || 0)) {
-        resetBedOptions("Lengkapi nama dan jenis kelamin seluruh penghuni terlebih dahulu.");
-        return;
-      }
+      if (
+  occupants.length !== Number(guestCount.value || 0) ||
+  occupants.some(person => !person.full_name.trim() || !person.gender)
+) {
+  resetBedOptions("Lengkapi nama dan jenis kelamin seluruh penghuni terlebih dahulu.");
+  return;
+}
 
       bedOptions.innerHTML = "";
 
@@ -1480,7 +1535,88 @@ form.addEventListener("submit", async (event) => {
     submitButton.textContent = "Lanjutkan Pemesanan";
   }
 });
+// ===== NAVIGASI FORMULIR 4 TAHAP =====
+const bookingSteps = document.querySelectorAll(".booking-step");
+let currentBookingStep = 1;
 
+function showBookingStep(stepNumber) {
+  currentBookingStep = stepNumber;
+
+  bookingSteps.forEach((step) => {
+    step.hidden = Number(step.dataset.step) !== stepNumber;
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll(".next-step").forEach((button) => {
+  button.addEventListener("click", () => {
+    const currentPanel = document.querySelector(
+      `.booking-step[data-step="${currentBookingStep}"]`
+    );
+
+    if (!currentPanel.checkValidity()) {
+      currentPanel.reportValidity();
+      return;
+    }
+
+   if (currentBookingStep === 3) {
+  const review = document.getElementById("bookingReview");
+  review.replaceChildren();
+
+  const title = document.createElement("h4");
+  title.textContent = "Ringkasan Pemesanan";
+  review.appendChild(title);
+
+  const addLine = (label, value) => {
+    const p = document.createElement("p");
+    p.textContent = `${label}: ${value || "-"}`;
+    review.appendChild(p);
+  };
+
+  addLine("Nama pemesan", document.getElementById("guestName").value);
+  addLine("NIP", document.getElementById("nip").value);
+  addLine("No. HP", document.getElementById("phone").value);
+  addLine("Unit kerja", document.getElementById("workUnit").value);
+  addLine("Tujuan", document.getElementById("purpose").value);
+  addLine("Check-in", document.getElementById("checkIn").value);
+  addLine("Check-out", document.getElementById("checkOut").value);
+
+  const occupants = getOccupantsFromForm();
+  const bedSelects = Array.from(
+    document.querySelectorAll('#bedOptions select[name="bedCode"]')
+  );
+
+  const heading = document.createElement("h4");
+  heading.textContent = "Penghuni dan Tempat Tidur";
+  review.appendChild(heading);
+
+  occupants.forEach((person, index) => {
+    const bedCode = bedSelects[index]?.value || "-";
+    addLine(
+      person.full_name,
+      `${person.gender === "male" ? "Laki-laki" : "Perempuan"} — ${bedCode}`
+    );
+  });
+
+  addLine(
+    "Bukti pendukung",
+    document.getElementById("proof").files[0]?.name || "-"
+  );
+}
+
+    showBookingStep(currentBookingStep + 1);
+  });
+});
+
+document.querySelectorAll(".previous-step").forEach((button) => {
+  button.addEventListener("click", () => {
+    showBookingStep(currentBookingStep - 1);
+  });
+});
+
+showBookingStep(1);
+// ===== AKHIR NAVIGASI FORMULIR =====
   </script>
 </body>
 </html>
