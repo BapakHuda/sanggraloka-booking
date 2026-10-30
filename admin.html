@@ -126,6 +126,68 @@
   background: white;
   font-size: 14px;
 }
+    .modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 35, 25, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 16px;
+  padding: 26px;
+}
+
+.modal-content h2 {
+  color: #164e3d;
+  margin-top: 0;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  background: #edf3ef;
+  color: #164e3d;
+  font-size: 24px;
+}
+
+.occupant-detail-card {
+  padding: 15px;
+  margin-top: 12px;
+  background: #f8faf8;
+  border: 1px solid #e1e8e3;
+  border-radius: 12px;
+}
+
+.occupant-detail-card strong {
+  display: block;
+  color: #164e3d;
+  margin-bottom: 8px;
+}
+
+.occupant-detail-card p {
+  margin: 5px 0;
+  line-height: 1.5;
+}
   </style>
 </head>
 <body>
@@ -190,6 +252,18 @@
       <p>Login berhasil. Tahap berikutnya adalah menghubungkan daftar booking dengan izin akses yang aman.</p>
       <button id="logoutButton" type="button">Keluar</button>
     </section>
+    <div id="occupantModal" class="modal hidden">
+  <div class="modal-content">
+    <button type="button" id="closeOccupantModal" class="modal-close">
+      &times;
+    </button>
+
+    <h2>Detail Penghuni</h2>
+    <p id="modalBookingCode"></p>
+
+    <div id="occupantDetails"></div>
+  </div>
+</div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -369,7 +443,70 @@ filteredBookings.forEach((booking) => {
     : "-";
 
   const actionCell = row.insertCell();
+const detailButton = document.createElement("button");
+detailButton.textContent = "Detail Penghuni";
+detailButton.style.cssText =
+  "width:auto;margin:0 6px 6px 0;padding:8px 10px;font-size:12px;";
 
+detailButton.addEventListener("click", async () => {
+  detailButton.disabled = true;
+  detailButton.textContent = "Memuat...";
+
+  try {
+    const { data: occupants, error } = await client.rpc(
+      "get_booking_occupants",
+      { p_booking_code: booking.booking_code }
+    );
+
+    if (error) throw error;
+
+    if (!occupants || occupants.length === 0) {
+      alert("Belum ada detail penghuni untuk booking ini.");
+      return;
+    }
+
+const modal = document.getElementById("occupantModal");
+const modalBookingCode = document.getElementById("modalBookingCode");
+const occupantDetails = document.getElementById("occupantDetails");
+
+modalBookingCode.textContent = "Kode Booking: " + booking.booking_code;
+occupantDetails.replaceChildren();
+
+occupants.forEach((person, index) => {
+  const card = document.createElement("div");
+  card.className = "occupant-detail-card";
+
+  const name = document.createElement("strong");
+  name.textContent = `${index + 1}. ${person.occupant_name}`;
+
+  const gender = document.createElement("p");
+  gender.textContent =
+    "Jenis Kelamin: " +
+    (person.gender === "male" ? "Laki-laki" : "Perempuan");
+
+  const room = document.createElement("p");
+  room.textContent = "Kamar: " + (person.room_name || "-");
+
+  const bed = document.createElement("p");
+  bed.textContent = "Tempat Tidur: " + (person.bed_code || "-");
+
+  const status = document.createElement("p");
+  status.textContent = "Status: " + (person.assignment_status || "-");
+
+  card.append(name, gender, room, bed, status);
+  occupantDetails.appendChild(card);
+});
+
+modal.classList.remove("hidden");
+  } catch (error) {
+    alert("Gagal memuat detail penghuni: " + error.message);
+  } finally {
+    detailButton.disabled = false;
+    detailButton.textContent = "Detail Penghuni";
+  }
+});
+
+actionCell.appendChild(detailButton);
 const proofButton = document.createElement("button");
 proofButton.textContent = "Lihat Bukti";
 proofButton.style.cssText =
@@ -472,6 +609,21 @@ document.getElementById("statusFilter").addEventListener(
     document.getElementById("dateSort").addEventListener(
   "change",
   loadBookings
+);
+    document.getElementById("closeOccupantModal").addEventListener(
+  "click",
+  () => {
+    document.getElementById("occupantModal").classList.add("hidden");
+  }
+);
+
+document.getElementById("occupantModal").addEventListener(
+  "click",
+  (event) => {
+    if (event.target.id === "occupantModal") {
+      event.currentTarget.classList.add("hidden");
+    }
+  }
 );
 client.auth.getSession().then(({ data, error }) => {
   if (!error && data.session) {
