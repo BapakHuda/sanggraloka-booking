@@ -153,6 +153,7 @@
         if (error) throw error;
 
         showDashboard(data.user);
+        loadBookings();
       } catch (error) {
         showMessage("Login gagal. Periksa email dan kata sandi.", "error");
       } finally {
@@ -239,7 +240,46 @@ data.forEach((booking) => {
     : "-";
 
   const actionCell = row.insertCell();
-  const select = document.createElement("select");
+
+const proofButton = document.createElement("button");
+proofButton.textContent = "Lihat Bukti";
+proofButton.style.cssText =
+  "width:auto;margin:0 6px 6px 0;padding:8px 10px;font-size:12px;";
+
+proofButton.addEventListener("click", async () => {
+  proofButton.disabled = true;
+  proofButton.textContent = "Memuat...";
+
+  try {
+    const { data: path, error: pathError } = await client.rpc(
+      "get_booking_proof_path",
+      { p_booking_code: booking.booking_code }
+    );
+
+    if (pathError) throw pathError;
+
+    const { data: signed, error: signedError } =
+      await client.storage
+        .from("booking-proofs")
+        .createSignedUrl(path, 60);
+
+    if (signedError) throw signedError;
+
+    if (!signed?.signedUrl) {
+      throw new Error("URL bukti tidak berhasil dibuat.");
+    }
+
+    window.location.assign(signed.signedUrl);
+  } catch (error) {
+    alert("Gagal membuka bukti: " + error.message);
+    proofButton.disabled = false;
+    proofButton.textContent = "Lihat Bukti";
+  }
+});
+
+actionCell.appendChild(proofButton);
+
+const select = document.createElement("select");
 
   ["confirmed", "cancelled", "completed"].forEach((status) => {
     const option = document.createElement("option");
