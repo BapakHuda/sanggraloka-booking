@@ -591,13 +591,28 @@
   <button type="button" class="next-step">Lanjutkan</button>
 </div>
 
-<div class="booking-step" data-step="4" hidden>
-  <h3>04. Konfirmasi Pemesanan</h3>
-  <p>Periksa kembali seluruh informasi sebelum mengirim pemesanan.</p>
 
- <div id="bookingReview" class="booking-review">
-  <p class="hint">Ringkasan pemesanan akan ditampilkan di sini.</p>
+<!-- TAHAP 5: PEMERIKSAAN PESANAN -->
+<div class="booking-step" data-step="5" hidden>
+  <h3>Periksa Kembali Pesanan</h3>
+  <p>Pastikan seluruh informasi pemesanan sudah benar.</p>
+
+  <div id="bookingReview" class="booking-review">
+    <p class="hint">Ringkasan pemesanan akan ditampilkan di sini.</p>
+  </div>
+
+  <button type="button" class="previous-step">Kembali</button>
+  <button type="button" class="next-step">Lanjutkan</button>
 </div>
+
+<!-- TAHAP 6: KONFIRMASI PEMESANAN -->
+<div class="booking-step" data-step="6" hidden>
+  <h3>Konfirmasi Pemesanan</h3>
+  <p>Semua informasi sudah diperiksa. Silakan konfirmasi pemesanan.</p>
+
+  <div class="review-notice">
+    Pastikan data sudah benar sebelum mengirim pemesanan.
+  </div>
 
   <button type="button" class="previous-step">Kembali</button>
   <button type="submit">Konfirmasi Pemesanan</button>
@@ -1478,7 +1493,7 @@ function downloadBookingReceipt(details) {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-
+if (currentBookingStep !== 6) return;
   if (submitButton.disabled) return;
 
   if (!supabaseClient) {
@@ -1870,7 +1885,6 @@ if (currentBookingStep === 4) {
     "Periksa kembali jadwal, data pemesan, penghuni, dan tempat tidur sebelum mengonfirmasi pemesanan.";
   review.appendChild(notice);
 }
-
 
     showBookingStep(currentBookingStep + 1);
   });
