@@ -1900,7 +1900,24 @@ form.addEventListener("submit", async (event) => {
   );
 
   const selectedBedCodes = bedSelects.map(select => select.value);
+const bedGenderMismatch = occupants.some((person, index) => {
+  const selectedBed = bedSelects[index];
 
+  if (!selectedBed || !selectedBed.value) return true;
+
+  const selectedOption = selectedBed.selectedOptions[0];
+  const bedLabel = selectedOption?.textContent || "";
+
+  const expectedRoom =
+    person.gender === "male" ? "Kamar Pria" : "Kamar Wanita";
+
+  return !bedLabel.includes(expectedRoom);
+});
+
+if (bedGenderMismatch) {
+  alert("Tempat tidur harus sesuai dengan jenis kelamin setiap penghuni.");
+  return;
+}
   if (
     bedSelects.length !== count ||
     selectedBedCodes.some(code => !code) ||
@@ -1942,7 +1959,8 @@ form.addEventListener("submit", async (event) => {
   submitButton.disabled = true;
   submitButton.textContent = "Memproses...";
 
-  let uploadedPath = null;
+ let uploadedPath = null;
+let bookingCreated = false;
 
   try {
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -1979,7 +1997,7 @@ form.addEventListener("submit", async (event) => {
     if (!data || data.success !== true) {
       throw new Error(data?.message || "Pemesanan tidak berhasil.");
     }
-
+bookingCreated = true;
     try {
       downloadBookingReceipt({
         bookingCode: data.booking_code,
@@ -2017,16 +2035,26 @@ refreshMinimumDates();
 resetBedOptions();
 showBookingStep(1);
 
-  } catch (error) {
+    } catch (error) {
     console.error("[SANGGRALOKA] Pemesanan gagal:", error);
-    alert("Pemesanan gagal: " + (error.message || "Terjadi kesalahan."));
 
-    if (uploadedPath) {
-      alert(
-        "Berkas bukti mungkin sudah terunggah meskipun pemesanan gagal. " +
-        "Periksa status sebelum mencoba kembali."
-      );
+    if (uploadedPath && !bookingCreated) {
+      const { error: cleanupError } = await supabaseClient.storage
+        .from("booking-proofs")
+        .remove([uploadedPath]);
+
+      if (cleanupError) {
+        console.error(
+          "[SANGGRALOKA] Gagal membersihkan file:",
+          cleanupError
+        );
+      }
     }
+
+    alert(
+      "Pemesanan gagal: " +
+      (error.message || "Terjadi kesalahan.")
+    );
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Konfirmasi Pemesanan";
