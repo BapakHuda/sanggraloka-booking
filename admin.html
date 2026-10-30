@@ -108,6 +108,24 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+    .booking-search {
+  margin: 20px 0;
+}
+
+.booking-search input {
+  background: white;
+  border-color: #d7e0d9;
+}
+    #statusFilter,
+#dateSort {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #d7e0d9;
+  border-radius: 9px;
+  background: white;
+  font-size: 14px;
+}
   </style>
 </head>
 <body>
@@ -134,6 +152,23 @@
     <section class="card hidden" id="dashboard">
       <h1>Dashboard Pengelola</h1>
       <p id="userEmail"></p>
+      <div class="booking-search booking-list">
+  <input
+    id="bookingSearch"
+    type="search"
+    placeholder="Cari kode booking atau nama pemesan..."
+  >
+</div>
+      <select id="statusFilter">
+  <option value="">Semua Status</option>
+  <option value="confirmed">Confirmed</option>
+  <option value="cancelled">Cancelled</option>
+  <option value="completed">Completed</option>
+</select>
+      <select id="dateSort">
+  <option value="newest">Booking Terbaru</option>
+  <option value="oldest">Booking Terlama</option>
+</select>
       <div class="stats-grid booking-list">
   <div class="stat-card">
     <span>Total Booking</span>
@@ -260,7 +295,7 @@ document.getElementById("completedBookings").textContent =
     area.innerHTML += "<p>Belum ada data booking.</p>";
     return;
   }
-
+if (filteredBookings.length === 0)
   const wrapper = document.createElement("div");
       wrapper.className = "booking-list";
 wrapper.style.overflowX = "auto";
@@ -290,7 +325,33 @@ table.style.fontSize = "14px";
 
   
 
-data.forEach((booking) => {
+const searchInput = document.getElementById("bookingSearch");
+      const statusFilter =
+  document.getElementById("statusFilter")?.value || "";
+const keyword = searchInput?.value.trim().toLowerCase() || "";
+
+const filteredBookings = data.filter((booking) => {
+  const matchesKeyword =
+    (booking.booking_code || "").toLowerCase().includes(keyword) ||
+    (booking.requester_name || "").toLowerCase().includes(keyword);
+
+  const matchesStatus =
+    !statusFilter || booking.status === statusFilter;
+
+  return matchesKeyword && matchesStatus;
+});
+const dateSort =
+  document.getElementById("dateSort")?.value || "newest";
+
+filteredBookings.sort((a, b) => {
+  const dateA = new Date(a.created_at).getTime();
+  const dateB = new Date(b.created_at).getTime();
+
+  return dateSort === "oldest"
+    ? dateA - dateB
+    : dateB - dateA;
+});
+filteredBookings.forEach((booking) => {
   const row = table.insertRow();
 
   row.insertCell().textContent = booking.booking_code ?? "-";
@@ -399,7 +460,19 @@ const select = document.createElement("select");
   wrapper.appendChild(table);
 area.appendChild(wrapper);
 }
+document.getElementById("bookingSearch").addEventListener(
+  "input",
+  loadBookings
+);
 
+document.getElementById("statusFilter").addEventListener(
+  "change",
+  loadBookings
+);
+    document.getElementById("dateSort").addEventListener(
+  "change",
+  loadBookings
+);
 client.auth.getSession().then(({ data, error }) => {
   if (!error && data.session) {
     showDashboard(data.session.user);
