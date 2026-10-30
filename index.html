@@ -639,12 +639,12 @@
     }
 
     if (resetBeds) {
-      bedOptions
-        .querySelectorAll('input[name="bedCodes"]')
-        .forEach((input) => {
-          input.checked = false;
-        });
-    }
+  bedOptions
+    .querySelectorAll('select[name="bedCode"]')
+    .forEach((select) => {
+      select.value = "";
+    });
+}
 
     updateBedSelectionHint();
   }
@@ -719,21 +719,22 @@ function getOccupantsFromForm() {
 }
 
   function updateBedSelectionHint() {
-    const requiredCount = Number(guestCount.value || 0);
-    const selectedCount = bedOptions.querySelectorAll(
-      'select[name="bedCode"]:not([value=""])'
-    ).length;
+  const requiredCount = Number(guestCount.value || 0);
 
-    if (!requiredCount) {
-      bedSelectionHint.textContent = "Pilih jumlah orang terlebih dahulu.";
-      return;
-    }
+  const selectedCount = Array.from(
+    bedOptions.querySelectorAll('select[name="bedCode"]')
+  ).filter(select => select.value).length;
 
-    bedSelectionHint.textContent =
-      `Setiap penghuni harus mendapat satu tempat tidur. ` +
-      `Jumlah penghuni: ${requiredCount}.`;
+  if (!requiredCount) {
+    bedSelectionHint.textContent = "Pilih jumlah orang terlebih dahulu.";
+    return;
   }
 
+  bedSelectionHint.textContent =
+    `Setiap penghuni harus mendapat satu tempat tidur. ` +
+    `Jumlah penghuni: ${requiredCount}. ` +
+    `Tempat tidur dipilih: ${selectedCount}.`;
+}
   async function loadAvailableBeds() {
     const requestNumber = ++bedRequestNumber;
 
@@ -777,9 +778,12 @@ function getOccupantsFromForm() {
         section.style.marginBottom = "16px";
 
         const heading = document.createElement("p");
-        heading.innerHTML = `<strong>${occupant.full_name}</strong> — ${
-          occupant.gender === "male" ? "Laki-laki" : "Perempuan"
-        }`;
+const nameStrong = document.createElement("strong");
+nameStrong.textContent = occupant.full_name;
+heading.appendChild(nameStrong);
+heading.append(
+  ` — ${occupant.gender === "male" ? "Laki-laki" : "Perempuan"}`
+);
 
         const select = document.createElement("select");
         select.name = "bedCode";
@@ -1278,228 +1282,205 @@ function downloadBookingReceipt(details) {
   );
 }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
 
-    // Cegah double submit
-    if (submitButton.disabled) return;
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    /* ---- Validasi tahap awal ---- */
-    if (!supabaseClient) {
-      alert("Koneksi Supabase belum siap. Periksa konfigurasi sistem.");
-      return;
-    }
+  if (submitButton.disabled) return;
 
-    if (!form.reportValidity()) return;
+  if (!supabaseClient) {
+    alert("Koneksi Supabase belum siap.");
+    return;
+  }
 
-    if (!isValidStayDates()) {
-      alert("Check-in harus di masa depan dan check-out harus setelah check-in.");
-      return;
-    }
+  if (!form.reportValidity()) return;
 
-    /* ---- Validasi file bukti ---- */
-    if (!proof.files || proof.files.length === 0) {
-      alert("Silakan pilih file bukti persyaratan.");
-      return;
-    }
+  if (!isValidStayDates()) {
+    alert("Check-in harus di masa depan dan check-out harus setelah check-in.");
+    return;
+  }
 
-    const file = proof.files[0];
+  if (!proof.files || proof.files.length === 0) {
+    alert("Silakan pilih file bukti persyaratan.");
+    return;
+  }
 
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      alert("Berkas harus berformat PDF, JPG, JPEG, atau PNG.");
-      proof.value = "";
-      return;
-    }
+  const file = proof.files[0];
 
-    if (file.size > MAX_FILE_SIZE) {
-      alert("Ukuran file bukti maksimal 10 MB.");
-      proof.value = "";
-      return;
-    }
+  if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+    alert("Berkas harus PDF, JPG, JPEG, atau PNG.");
+    proof.value = "";
+    return;
+  }
 
-    /* ---- Validasi jumlah orang & tempat tidur ---- */
-    const count = Number(guestCount.value);
+  if (file.size > MAX_FILE_SIZE) {
+    alert("Ukuran file maksimal 10 MB.");
+    proof.value = "";
+    return;
+  }
 
-    if (!count) {
-      alert("Pilih jumlah orang yang menginap.");
-      return;
-    }
+  const count = Number(guestCount.value);
 
-    const selectedBedCodes = Array.from(
-      bedOptions.querySelectorAll('input[name="bedCodes"]:checked')
-    ).map((input) => input.value);
+  if (!count) {
+    alert("Pilih jumlah orang yang menginap.");
+    return;
+  }
 
-    if (selectedBedCodes.length !== count) {
-      alert(`Pilih tepat ${count} tempat tidur.`);
-      return;
-    }
+  if (family.value === "Ya" && count < MIN_GUEST_WITH_COMPANION) {
+    alert("Jika membawa pendamping, pilih minimal 2 orang.");
+    return;
+  }
 
-    /* ---- Validasi nama pendamping ---- */
-    const companionList = family.value === "Ya"
-      ? companionNames.value
-          .split(/\r?\n/)
-          .map((name) => name.trim())
-          .filter(Boolean)
-      : [];
+  if (family.value === "Tidak" && count !== 1) {
+    alert("Jika tidak membawa pendamping, jumlah orang harus 1.");
+    return;
+  }
 
-    if (family.value === "Ya" && count < MIN_GUEST_WITH_COMPANION) {
-      alert(`Jika membawa pendamping, pilih minimal ${MIN_GUEST_WITH_COMPANION} orang.`);
-      return;
-    }
+  const occupants = getOccupantsFromForm();
 
-    if (family.value === "Tidak" && count !== 1) {
-      alert("Jika tidak membawa pendamping, jumlah orang harus 1.");
-      return;
-    }
+  if (
+    occupants.length !== count ||
+    occupants.some(person => !person.full_name || !person.gender)
+  ) {
+    alert("Lengkapi nama dan jenis kelamin seluruh penghuni.");
+    return;
+  }
 
-    if (companionList.length !== count - 1) {
-      alert(
-        `Kamu memilih ${count} orang. ` +
-        `Masukkan tepat ${count - 1} nama pendamping, satu nama per baris.`
-      );
-      return;
-    }
+  const bedSelects = Array.from(
+    bedOptions.querySelectorAll('select[name="bedCode"]')
+  );
 
-    /* ---- Validasi data teks lainnya ---- */
-    const getValue = (id) => document.getElementById(id).value.trim();
+  const selectedBedCodes = bedSelects.map(select => select.value);
 
-    const guestName = getValue("guestName");
-    const nip       = getValue("nip");
-    const phone     = getValue("phone");
-    const workUnit  = getValue("workUnit");
-    const echelon   = getValue("echelon");
-    const purpose   = getValue("purpose");
+  if (
+    bedSelects.length !== count ||
+    selectedBedCodes.some(code => !code) ||
+    new Set(selectedBedCodes).size !== count
+  ) {
+    alert("Pilih satu tempat tidur berbeda untuk setiap penghuni.");
+    return;
+  }
 
-    if (!guestName || !nip || !phone || !workUnit || !echelon || !purpose) {
-      alert("Mohon lengkapi semua data wajib.");
-      return;
-    }
+  const getValue = (id) =>
+    document.getElementById(id).value.trim();
 
-    if (!["Jump Shift", "Transit"].includes(purpose)) {
-      alert("Tujuan penggunaan tidak valid.");
-      return;
-    }
+  const guestName = getValue("guestName");
+  const nip = getValue("nip");
+  const phone = getValue("phone");
+  const workUnit = getValue("workUnit");
+  const echelon = getValue("echelon");
+  const purpose = getValue("purpose");
 
-    /* ---- Snapshot nilai sebelum proses async ---- */
-    // Agar data yang dikirim konsisten meskipun user mengubah form
-    // selama proses unggah/simpan berjalan.
-    const plannedCheckIn  = new Date(checkIn.value);
-    const plannedCheckOut = new Date(checkOut.value);
+  if (!guestName || !nip || !phone || !workUnit || !echelon || !purpose) {
+    alert("Mohon lengkapi semua data wajib.");
+    return;
+  }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "Memproses...";
+  if (!["Jump Shift", "Transit"].includes(purpose)) {
+    alert("Tujuan penggunaan tidak valid.");
+    return;
+  }
 
-    let uploadedPath = null;
+  const plannedCheckIn = new Date(checkIn.value);
+  const plannedCheckOut = new Date(checkOut.value);
 
-    try {
-      /* ---- 1) Unggah bukti ke storage ---- */
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      uploadedPath = `${crypto.randomUUID()}-${safeName}`;
+  const receiptOccupants = occupants.map((person, index) => ({
+    ...person,
+    roomName: person.gender === "male" ? "Kamar Pria" : "Kamar Wanita",
+    bedCode: selectedBedCodes[index]
+  }));
 
-      console.info("[SANGGRALOKA] Mengunggah bukti pendukung...");
+  submitButton.disabled = true;
+  submitButton.textContent = "Memproses...";
 
-      const { error: uploadError } = await supabaseClient.storage
-        .from("booking-proofs")
-        .upload(uploadedPath, file, {
-          contentType: file.type,
-          upsert: false
-        });
+  let uploadedPath = null;
 
-      if (uploadError) throw uploadError;
+  try {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    uploadedPath = `${crypto.randomUUID()}-${safeName}`;
 
-      /* ---- 2) Simpan pemesanan via RPC ---- */
-      console.info("[SANGGRALOKA] Menyimpan data booking...");
-
-      const { data, error } = await supabaseClient.rpc("create_public_booking", {
-        p_requester_name:        guestName,
-        p_requester_employee_id: nip,
-        p_requester_unit:        workUnit,
-        p_requester_echelon:     echelon,
-        p_requester_phone:       phone,
-        p_purpose:               purpose === "Jump Shift" ? "jump_shift" : "transit",
-        p_planned_check_in:      plannedCheckIn.toISOString(),
-        p_planned_check_out:     plannedCheckOut.toISOString(),
-        p_requirement_reference: uploadedPath,
-
-        // Semua penghuni: pemesan (primary) + pendamping
-        p_occupants: [
-          {
-            full_name: guestName,
-            is_primary_requester: true
-          },
-          ...companionList.map((name) => ({
-            full_name: name,
-            is_primary_requester: false
-          }))
-        ],
-
-        // Seluruh tempat tidur yang dipilih (1 per penghuni)
-        p_bed_codes: selectedBedCodes
+    const { error: uploadError } = await supabaseClient.storage
+      .from("booking-proofs")
+      .upload(uploadedPath, file, {
+        contentType: file.type,
+        upsert: false
       });
 
-      if (error) throw error;
+    if (uploadError) throw uploadError;
 
-      if (!data || data.success !== true) {
-        throw new Error(data?.message || "Pemesanan tidak berhasil.");
+    const { data, error } = await supabaseClient.rpc(
+      "create_public_booking",
+      {
+        p_requester_name: guestName,
+        p_requester_employee_id: nip,
+        p_requester_unit: workUnit,
+        p_requester_echelon: echelon,
+        p_requester_phone: phone,
+        p_purpose: purpose === "Jump Shift" ? "jump_shift" : "transit",
+        p_planned_check_in: plannedCheckIn.toISOString(),
+        p_planned_check_out: plannedCheckOut.toISOString(),
+        p_requirement_reference: uploadedPath,
+        p_occupants: occupants,
+        p_bed_codes: selectedBedCodes
       }
+    );
 
-      /* ---- 3) Sukses ---- */
-      /* ---- 3) Sukses + buat bukti PDF ---- */
-try {
-  downloadBookingReceipt({
-    bookingCode: data.booking_code,
-    guestName: guestName,
-    nip: nip,
-    phone: phone,
-    workUnit: workUnit,
-    echelon: echelon,
-    purpose: purpose === "Jump Shift" ? "Jump Shift" : "Transit",
-    checkIn: plannedCheckIn,
-    checkOut: plannedCheckOut,
-    roomName: roomType.value === "M"
-      ? "Kamar Pria"
-      : "Kamar Wanita",
-    occupants: [guestName, ...companionList],
-    bedCodes: selectedBedCodes
-  });
+    if (error) throw error;
 
-  alert(
-    "Pemesanan berhasil!\n" +
-    "Kode booking: " + data.booking_code +
-    "\nBukti pemesanan PDF sedang diunduh."
-  );
-} catch (pdfError) {
-  console.error("[SANGGRALOKA] Gagal membuat PDF:", pdfError);
-
-  alert(
-    "Pemesanan berhasil!\n" +
-    "Kode booking: " + data.booking_code +
-    "\nPDF gagal dibuat. Simpan kode booking ini."
-  );
-}
-
-      // Reset seluruh form ke kondisi awal
-      form.reset();
-      updateCompanionField();
-      refreshMinimumDates();
-      resetBedOptions();
-
-    } catch (error) {
-      console.error("[SANGGRALOKA] Pemesanan gagal:", error);
-
-      alert("Pemesanan gagal: " + (error.message || "Terjadi kesalahan."));
-
-      if (uploadedPath) {
-        alert(
-          "Berkas bukti mungkin sudah terunggah meskipun pemesanan gagal. " +
-          "Jangan mengirim berulang kali sebelum statusnya diperiksa."
-        );
-      }
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = "Lanjutkan Pemesanan";
+    if (!data || data.success !== true) {
+      throw new Error(data?.message || "Pemesanan tidak berhasil.");
     }
-  });
+
+    try {
+      downloadBookingReceipt({
+        bookingCode: data.booking_code,
+        guestName,
+        nip,
+        phone,
+        workUnit,
+        echelon,
+        purpose,
+        checkIn: plannedCheckIn,
+        checkOut: plannedCheckOut,
+        occupants: receiptOccupants,
+        bedCodes: selectedBedCodes
+      });
+
+      alert(
+        "Pemesanan berhasil!\nKode booking: " +
+        data.booking_code +
+        "\nBukti PDF sedang diunduh."
+      );
+    } catch (pdfError) {
+      console.error("[SANGGRALOKA] Gagal membuat PDF:", pdfError);
+      alert(
+        "Pemesanan berhasil!\nKode booking: " +
+        data.booking_code +
+        "\nPDF gagal dibuat. Simpan kode booking ini."
+      );
+    }
+
+    form.reset();
+    updateCompanionField();
+    refreshMinimumDates();
+    resetBedOptions();
+
+  } catch (error) {
+    console.error("[SANGGRALOKA] Pemesanan gagal:", error);
+    alert("Pemesanan gagal: " + (error.message || "Terjadi kesalahan."));
+
+    if (uploadedPath) {
+      alert(
+        "Berkas bukti mungkin sudah terunggah meskipun pemesanan gagal. " +
+        "Periksa status sebelum mencoba kembali."
+      );
+    }
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Lanjutkan Pemesanan";
+  }
+});
+
   </script>
 </body>
 </html>
