@@ -1534,10 +1534,14 @@ document.querySelectorAll(".next-step").forEach((button) => {
       `.booking-step[data-step="${currentBookingStep}"]`
     );
 
-    if (!currentPanel.checkValidity()) {
-      currentPanel.reportValidity();
-      return;
-    }
+  const fields = currentPanel.querySelectorAll("input, select, textarea");
+
+for (const field of fields) {
+  if (!field.checkValidity()) {
+    field.reportValidity();
+    return;
+  }
+}
 
    if (currentBookingStep === 3) {
   const review = document.getElementById("bookingReview");
