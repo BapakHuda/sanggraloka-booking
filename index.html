@@ -749,25 +749,6 @@ function getOccupantsFromForm() {
 
   return occupants;
 }
-
-  const names = companionListContainer.querySelectorAll(
-    'input[name="companionName"]'
-  );
-  const genders = companionListContainer.querySelectorAll(
-    'select[name="companionGender"]'
-  );
-
-  names.forEach((input, index) => {
-    occupants.push({
-      full_name: input.value.trim(),
-      gender: genders[index]?.value || "",
-      is_primary_requester: false
-    });
-  });
-
-  return occupants;
-}
-
   function updateBedSelectionHint() {
   const requiredCount = Number(guestCount.value || 0);
 
