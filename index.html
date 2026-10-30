@@ -664,18 +664,20 @@
   guestGender.addEventListener("change", () => {
     loadAvailableBeds();
   });
+    companionListContainer.addEventListener("change", loadAvailableBeds);
+
+document.getElementById("guestName").addEventListener(
+  "change",
+  loadAvailableBeds
+);
 
   updateCompanionField();
 
-  /* ============================================================
-   * 7. PEMILIHAN TEMPAT TIDUR (MULTI-SELECT)
+    /* ============================================================
+   * 7. PEMILIHAN TEMPAT TIDUR BERDASARKAN PENGHUNI
    * ============================================================ */
 
-  /**
-   * Kosongkan daftar tempat tidur dan tampilkan pesan status.
-   * @param {string} message - Pesan yang tampil sebagai info.
-   */
-  function resetBedOptions(message = "Pilih tanggal dan jenis kamar terlebih dahulu.") {
+  function resetBedOptions(message = "Pilih tanggal dan data penghuni terlebih dahulu.") {
     bedOptions.innerHTML = "";
 
     const info = document.createElement("p");
@@ -686,14 +688,40 @@
     updateBedSelectionHint();
   }
 
-  /**
-   * Perbarui teks petunjuk jumlah tempat tidur yang harus dipilih
-   * berdasarkan jumlah orang yang menginap.
-   */
+function getOccupantsFromForm() {
+  const occupants = [];
+  const requesterName = document.getElementById("guestName").value.trim();
+
+  if (requesterName && guestGender.value) {
+    occupants.push({
+      full_name: requesterName,
+      gender: guestGender.value,
+      is_primary_requester: true
+    });
+  }
+
+  const names = companionListContainer.querySelectorAll(
+    'input[name="companionName"]'
+  );
+  const genders = companionListContainer.querySelectorAll(
+    'select[name="companionGender"]'
+  );
+
+  names.forEach((input, index) => {
+    occupants.push({
+      full_name: input.value.trim(),
+      gender: genders[index]?.value || "",
+      is_primary_requester: false
+    });
+  });
+
+  return occupants;
+}
+
   function updateBedSelectionHint() {
     const requiredCount = Number(guestCount.value || 0);
     const selectedCount = bedOptions.querySelectorAll(
-      'input[name="bedCodes"]:checked'
+      'select[name="bedCode"]:not([value=""])'
     ).length;
 
     if (!requiredCount) {
@@ -702,24 +730,18 @@
     }
 
     bedSelectionHint.textContent =
-      `Pilih ${requiredCount} tempat tidur. ` +
-      `Sudah dipilih: ${selectedCount}/${requiredCount}.`;
+      `Setiap penghuni harus mendapat satu tempat tidur. ` +
+      `Jumlah penghuni: ${requiredCount}.`;
   }
 
-  /**
-   * Ambil daftar tempat tidur yang tersedia dari Supabase (RPC
-   * `get_available_beds`) lalu render sebagai checkbox.
-   */
   async function loadAvailableBeds() {
     const requestNumber = ++bedRequestNumber;
 
-    // Prasyarat form belum lengkap
-    if (!checkIn.value || !checkOut.value || !roomType.value) {
+    if (!checkIn.value || !checkOut.value || !guestGender.value) {
       resetBedOptions();
       return;
     }
 
-    // Supabase belum siap
     if (!supabaseClient) {
       resetBedOptions("Koneksi sistem belum siap.");
       return;
@@ -729,70 +751,85 @@
       resetBedOptions("Memuat tempat tidur yang tersedia...");
 
       const { data, error } = await supabaseClient.rpc("get_available_beds", {
-        p_planned_check_in:  new Date(checkIn.value).toISOString(),
+        p_planned_check_in: new Date(checkIn.value).toISOString(),
         p_planned_check_out: new Date(checkOut.value).toISOString()
       });
 
-      // Abaikan hasil request lama jika pengguna sudah mengubah pilihan
       if (requestNumber !== bedRequestNumber) return;
-
       if (error) throw error;
 
-      // Filter hanya bed yang cocok dengan jenis kamar
-      const expectedRoomName = roomType.value === "M" ? "Kamar Pria" : "Kamar Wanita";
-      const availableBeds = (data || []).filter(
-        (bed) => bed.room_name === expectedRoomName && bed.bed_code
-      );
+      const occupants = getOccupantsFromForm();
+
+      if (occupants.length !== Number(guestCount.value || 0)) {
+        resetBedOptions("Lengkapi nama dan jenis kelamin seluruh penghuni terlebih dahulu.");
+        return;
+      }
 
       bedOptions.innerHTML = "";
 
-      if (availableBeds.length === 0) {
+      if (!data || data.length === 0) {
         resetBedOptions("Tidak ada tempat tidur tersedia untuk tanggal tersebut.");
         return;
       }
 
-      // Render setiap tempat tidur sebagai checkbox
-      availableBeds.forEach((bed) => {
-        const label = document.createElement("label");
-        label.style.display = "flex";
-        label.style.alignItems = "center";
-        label.style.gap = "8px";
-        label.style.margin = "8px 0";
-        label.style.cursor = "pointer";
+      occupants.forEach((occupant, index) => {
+        const section = document.createElement("div");
+        section.style.marginBottom = "16px";
 
-        const checkbox = document.createElement("input");
-        checkbox.type  = "checkbox";
-        checkbox.name  = "bedCodes";
-        checkbox.value = bed.bed_code;
+        const heading = document.createElement("p");
+        heading.innerHTML = `<strong>${occupant.full_name}</strong> — ${
+          occupant.gender === "male" ? "Laki-laki" : "Perempuan"
+        }`;
 
-        checkbox.addEventListener("change", () => {
-          const requiredCount = Number(guestCount.value || 0);
-          const selected = bedOptions.querySelectorAll(
-            'input[name="bedCodes"]:checked'
-          );
+        const select = document.createElement("select");
+        select.name = "bedCode";
+        select.required = true;
+        select.dataset.occupantIndex = String(index);
 
-          if (!requiredCount) {
-            // Jumlah orang belum dipilih: batalkan centang
-            checkbox.checked = false;
-            alert("Pilih jumlah orang yang menginap terlebih dahulu.");
-          } else if (selected.length > requiredCount) {
-            // Melebihi kuota: batalkan centang
-            checkbox.checked = false;
-            alert(`Kamu hanya boleh memilih ${requiredCount} tempat tidur.`);
+        select.add(new Option("Pilih tempat tidur", ""));
+
+        const expectedRoomType =
+          occupant.gender === "male" ? "men" : "women";
+
+        const matchingBeds = data.filter(
+          (bed) =>
+            bed.room_type === expectedRoomType &&
+            bed.bed_code
+        );
+
+        matchingBeds.forEach((bed) => {
+          const details = [
+            bed.room_name,
+            bed.bed_code,
+            bed.bunk_code,
+            bed.bed_position
+          ].filter(Boolean).join(" — ");
+
+          select.add(new Option(details, bed.bed_code));
+        });
+
+        if (matchingBeds.length === 0) {
+          select.add(new Option("Tidak ada tempat tidur tersedia", ""));
+        }
+
+        select.addEventListener("change", () => {
+          const selectedCodes = Array.from(
+            bedOptions.querySelectorAll('select[name="bedCode"]')
+          )
+            .map((item) => item.value)
+            .filter(Boolean);
+
+          if (new Set(selectedCodes).size !== selectedCodes.length) {
+            alert("Tempat tidur tersebut sudah dipilih penghuni lain.");
+            select.value = "";
           }
 
           updateBedSelectionHint();
         });
 
-        const details = [
-          bed.bed_code,
-          bed.bunk_code,
-          bed.bed_position
-        ].filter(Boolean).join(" — ");
-
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(details));
-        bedOptions.appendChild(label);
+        section.appendChild(heading);
+        section.appendChild(select);
+        bedOptions.appendChild(section);
       });
 
       updateBedSelectionHint();
@@ -820,7 +857,7 @@
   });
 
   checkOut.addEventListener("change", loadAvailableBeds);
-  roomType.addEventListener("change", loadAvailableBeds);
+  
 
   // Pesan awal sebelum interaksi
   resetBedOptions();
