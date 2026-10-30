@@ -169,7 +169,101 @@
       font-size: 11px;
       color: var(--muted);
     }
+    /* Navigasi formulir 6 tahap */
+    .booking-step {
+      animation: stepFade .25s ease;
+    }
 
+    .booking-step h3 {
+      color: var(--green);
+      font-size: 19px;
+      margin: 0 0 6px;
+    }
+
+    .booking-step > p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 22px;
+    }
+
+    .booking-step[hidden] {
+      display: none !important;
+    }
+
+    @keyframes stepFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Indikator progres */
+    .booking-progress {
+      margin: 24px 0 30px;
+      padding: 18px;
+      background: #f8faf8;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .progress-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 7px;
+      background: #e5ece7;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 16.67%;
+      background: #238653;
+      border-radius: 20px;
+      transition: width .3s ease;
+    }
+
+    .progress-dots {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .progress-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #d6dfd9;
+      transition: background .2s ease;
+    }
+
+    .progress-dot.active {
+      background: #238653;
+    }
+
+    /* Tombol navigasi */
+    .booking-step > button {
+      width: auto;
+      min-width: 125px;
+      margin-top: 24px;
+    }
+
+    .booking-step > button.previous-step {
+      background: #edf3ef;
+      color: var(--green);
+      border: 1px solid #dce7df;
+      margin-right: 8px;
+    }
+
+    .booking-step > button.previous-step:hover {
+      background: #e1ece5;
+    }
     /* Opsi tempat tidur berbentuk daftar checkbox */
     #bedOptions label {
       font-weight: 400;
@@ -401,7 +495,130 @@
     font-size: 13px;
   }
 }
+.booking-progress {
+  margin: 24px 0 30px;
+}
 
+.progress-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #174b36;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.progress-track {
+  height: 7px;
+  background: #e5ece7;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 16.67%;
+  height: 100%;
+  background: #238653;
+  border-radius: 20px;
+  transition: width .3s ease;
+}
+
+.progress-dots {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.progress-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d6dfd9;
+}
+
+.progress-dot.active {
+  background: #238653;
+}
+        @media (max-width: 480px) {
+      .booking-progress {
+        padding: 14px;
+        margin: 20px 0 24px;
+      }
+
+      .progress-heading {
+        font-size: 12px;
+      }
+
+      .booking-step > button {
+        width: 100%;
+        margin: 8px 0 0;
+      }
+
+      .booking-step > button.previous-step {
+        margin-right: 0;
+      }
+    }
+    /* Kartu pilihan tempat tidur */
+.bed-occupant-card {
+  background: #f8faf8;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.bed-occupant-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.bed-occupant-name {
+  color: var(--green);
+  font-size: 14px;
+}
+
+.bed-occupant-gender {
+  background: var(--green-light);
+  color: var(--green);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bed-select {
+  background: white;
+  border-color: #cfdcd2;
+  cursor: pointer;
+}
+
+.bed-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px #164e3d12;
+}
+    .review-bed {
+  max-width: 55%;
+  text-align: right;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .review-occupant {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .review-bed {
+    max-width: 100%;
+    margin-left: 54px;
+    text-align: left;
+  }
+}
   </style>
 </head>
 <body>
@@ -428,10 +645,29 @@
       <!-- ================= KOLOM KIRI: FORMULIR ================= -->
       <section class="card">
         <h2>Formulir Pemesanan</h2>
+        
         <p class="subheading">Lengkapi informasi berikut dengan benar.</p>
 
         <form id="bookingForm">
+<div class="booking-progress">
+  <div class="progress-heading">
+    <span id="progressTitle">Jadwal Menginap</span>
+    <span id="progressCount">1 / 6</span>
+  </div>
 
+  <div class="progress-track">
+    <div id="progressBar" class="progress-fill"></div>
+  </div>
+
+  <div class="progress-dots">
+    <span class="progress-dot active"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+    <span class="progress-dot"></span>
+  </div>
+</div>
 <div class="booking-step" data-step="1">
   <h3>01. Jadwal Menginap</h3>
   <p>Pilih tanggal dan waktu menginap.</p>
@@ -984,11 +1220,23 @@ function getOccupantsFromForm() {
         return;
       }
 
-      occupants.forEach((occupant, index) => {
-        const section = document.createElement("div");
-        section.style.marginBottom = "16px";
+   occupants.forEach((occupant, index) => {
+  const section = document.createElement("div");
+  section.className = "bed-occupant-card";
 
-        const heading = document.createElement("p");
+  const heading = document.createElement("div");
+  heading.className = "bed-occupant-heading";
+
+  const nameStrong = document.createElement("strong");
+  nameStrong.className = "bed-occupant-name";
+  nameStrong.textContent = occupant.full_name;
+
+  const genderLabel = document.createElement("span");
+  genderLabel.className = "bed-occupant-gender";
+  genderLabel.textContent =
+    occupant.gender === "male" ? "Laki-laki" : "Perempuan";
+
+  heading.append(nameStrong, genderLabel);
 const nameStrong = document.createElement("strong");
 nameStrong.textContent = occupant.full_name;
 heading.appendChild(nameStrong);
@@ -998,6 +1246,9 @@ heading.append(
 
         const select = document.createElement("select");
         select.name = "bedCode";
+     const select = document.createElement("select");
+select.className = "bed-select";
+select.name = "bedCode";
         select.required = true;
         select.dataset.occupantIndex = String(index);
 
@@ -1672,10 +1923,11 @@ form.addEventListener("submit", async (event) => {
       );
     }
 
-    form.reset();
-    updateCompanionField();
-    refreshMinimumDates();
-    resetBedOptions();
+   form.reset();
+updateCompanionField();
+refreshMinimumDates();
+resetBedOptions();
+showBookingStep(1);
 
   } catch (error) {
     console.error("[SANGGRALOKA] Pemesanan gagal:", error);
@@ -1689,16 +1941,36 @@ form.addEventListener("submit", async (event) => {
     }
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Lanjutkan Pemesanan";
+    submitButton.textContent = "Konfirmasi Pemesanan";
   }
 });
-// ===== NAVIGASI FORMULIR 4 TAHAP =====
+// ===== NAVIGASI FORMULIR 6 TAHAP =====
 const bookingSteps = document.querySelectorAll(".booking-step");
 let currentBookingStep = 1;
 
 function showBookingStep(stepNumber) {
   currentBookingStep = stepNumber;
+const stepTitles = [
+  "Jadwal Menginap",
+  "Data Penghuni",
+  "Pilih Tempat Tidur",
+  "Data Pemesan",
+  "Periksa Kembali Pesanan",
+  "Konfirmasi Pemesanan"
+];
 
+document.getElementById("progressTitle").textContent =
+  stepTitles[stepNumber - 1];
+
+document.getElementById("progressCount").textContent =
+  `${stepNumber} / 6`;
+
+document.getElementById("progressBar").style.width =
+  `${(stepNumber / 6) * 100}%`;
+
+document.querySelectorAll(".progress-dot").forEach((dot, index) => {
+  dot.classList.toggle("active", index < stepNumber);
+});
   bookingSteps.forEach((step) => {
     step.hidden = Number(step.dataset.step) !== stepNumber;
   });
@@ -1852,9 +2124,9 @@ if (currentBookingStep === 4) {
       person.gender === "male" ? "Laki-laki" : "Perempuan"
     );
 
-    const bed = document.createElement("span");
-    bed.className = "review-bed";
-    bed.textContent = bedCode;
+   const bed = document.createElement("span");
+bed.className = "review-bed";
+bed.textContent = bedLabel;
 
     item.append(avatar, personInfo, bed);
     occupantsCard.appendChild(item);
