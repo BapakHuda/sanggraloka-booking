@@ -22,10 +22,19 @@
     }
     header span { color: #d6ad60; }
     main {
-      max-width: 480px;
-      margin: 55px auto;
-      padding: 20px;
-    }
+  max-width: 1200px;
+  margin: 35px auto;
+  padding: 20px;
+}
+
+#loginCard {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#dashboard {
+  width: 100%;
+}
     .card {
       background: white;
       padding: 26px;
@@ -68,6 +77,37 @@
     .error { color: #b42318; }
     .success { color: #167447; }
     .hidden { display: none; }
+    .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.stat-card {
+  background: #f8faf8;
+  border: 1px solid #e1e8e3;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.stat-card span {
+  display: block;
+  color: #718078;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.stat-card strong {
+  color: #164e3d;
+  font-size: 26px;
+}
+
+@media (max-width: 650px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
   </style>
 </head>
 <body>
@@ -94,6 +134,24 @@
     <section class="card hidden" id="dashboard">
       <h1>Dashboard Pengelola</h1>
       <p id="userEmail"></p>
+      <div class="stats-grid booking-list">
+  <div class="stat-card">
+    <span>Total Booking</span>
+    <strong id="totalBookings">0</strong>
+  </div>
+  <div class="stat-card">
+    <span>Confirmed</span>
+    <strong id="confirmedBookings">0</strong>
+  </div>
+  <div class="stat-card">
+    <span>Cancelled</span>
+    <strong id="cancelledBookings">0</strong>
+  </div>
+  <div class="stat-card">
+    <span>Completed</span>
+    <strong id="completedBookings">0</strong>
+  </div>
+</div>
       <p>Login berhasil. Tahap berikutnya adalah menghubungkan daftar booking dengan izin akses yang aman.</p>
       <button id="logoutButton" type="button">Keluar</button>
     </section>
@@ -187,7 +245,17 @@ const heading = document.createElement("h3");
 heading.textContent = "Daftar Booking";
 heading.className = "booking-list";
 area.appendChild(heading);
+      
+document.getElementById("totalBookings").textContent = data.length;
 
+document.getElementById("confirmedBookings").textContent =
+  data.filter(b => b.status === "confirmed").length;
+
+document.getElementById("cancelledBookings").textContent =
+  data.filter(b => b.status === "cancelled").length;
+
+document.getElementById("completedBookings").textContent =
+  data.filter(b => b.status === "completed").length;
   if (!data || data.length === 0) {
     area.innerHTML += "<p>Belum ada data booking.</p>";
     return;
