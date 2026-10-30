@@ -479,22 +479,21 @@
   const MIN_GUEST_WITH_COMPANION = 2;
   const MAX_GUEST_WITH_COMPANION = 8;
 
-  /* ============================================================
+    /* ============================================================
    * 2. REFERENSI ELEMEN DOM
    * ============================================================ */
-  const form                = document.getElementById("bookingForm");
-  const checkIn             = document.getElementById("checkIn");
-  const checkOut            = document.getElementById("checkOut");
-  const roomType            = document.getElementById("roomType");
-  const bedOptions          = document.getElementById("bedOptions");
-  const bedSelectionHint    = document.getElementById("bedSelectionHint");
-  const proof               = document.getElementById("proof");
-  const family              = document.getElementById("family");
-  const guestCount          = document.getElementById("guestCount");
-  const companionNamesField = document.getElementById("companionNamesField");
-  const companionNames      = document.getElementById("companionNames");
-  const submitButton        = form.querySelector('button[type="submit"]');
-
+  const form                  = document.getElementById("bookingForm");
+  const checkIn               = document.getElementById("checkIn");
+  const checkOut              = document.getElementById("checkOut");
+  const bedOptions            = document.getElementById("bedOptions");
+  const bedSelectionHint      = document.getElementById("bedSelectionHint");
+  const proof                 = document.getElementById("proof");
+  const family                = document.getElementById("family");
+  const guestCount            = document.getElementById("guestCount");
+  const guestGender           = document.getElementById("guestGender");
+  const companionNamesField   = document.getElementById("companionNamesField");
+  const companionListContainer = document.getElementById("companionList");
+  const submitButton          = form.querySelector('button[type="submit"]');
   /* ============================================================
    * 3. STATE GLOBAL
    * ============================================================ */
@@ -568,25 +567,13 @@
 
   refreshMinimumDates();
 
-  /* ============================================================
-   * 6. FIELD PENDUKUNG: JUMLAH ORANG & NAMA PENDAMPING
+    /* ============================================================
+   * 6. FIELD PENDUKUNG: JUMLAH ORANG & DATA PENDAMPING
    * ============================================================ */
 
-  /**
-   * Bangun ulang pilihan jumlah orang berdasarkan jawaban "membawa
-   * pendamping":
-   * - "Tidak" → hanya 1 orang (otomatis terpilih).
-   * - "Ya"    → 2 s.d. 8 orang; jumlah sebelumnya dipertahankan
-   *             bila masih dalam rentang.
-   *
-   * @param {boolean} resetBeds - Jika true, semua checkbox tempat tidur
-   *                              di-reset untuk menghindari ketidakcocokan
-   *                              jumlah.
-   */
   function updateCompanionField(resetBeds = false) {
     const previousCount = Number(guestCount.value || 0);
 
-    // Bangun ulang opsi jumlah orang
     guestCount.innerHTML = "";
     guestCount.add(new Option("Pilih jumlah orang", ""));
 
@@ -594,29 +581,69 @@
       guestCount.add(new Option("1 orang", "1"));
       guestCount.value = "1";
     } else if (family.value === "Ya") {
-      for (let count = MIN_GUEST_WITH_COMPANION; count <= MAX_GUEST_WITH_COMPANION; count++) {
+      for (
+        let count = MIN_GUEST_WITH_COMPANION;
+        count <= MAX_GUEST_WITH_COMPANION;
+        count++
+      ) {
         guestCount.add(new Option(`${count} orang`, String(count)));
       }
-      // Pertahankan pilihan sebelumnya bila masih valid
-      if (previousCount >= MIN_GUEST_WITH_COMPANION && previousCount <= MAX_GUEST_WITH_COMPANION) {
+
+      if (
+        previousCount >= MIN_GUEST_WITH_COMPANION &&
+        previousCount <= MAX_GUEST_WITH_COMPANION
+      ) {
         guestCount.value = String(previousCount);
       }
     }
 
-    // Tampilkan field nama pendamping hanya jika jawabannya "Ya"
-    const needsCompanionNames = family.value === "Ya";
-    companionNamesField.style.display = needsCompanionNames ? "block" : "none";
-    companionNames.required           = needsCompanionNames;
+    const totalPeople = Number(guestCount.value || 0);
+    const companionCount = Math.max(0, totalPeople - 1);
 
-    if (!needsCompanionNames) {
-      companionNames.value = "";
+    companionNamesField.style.display =
+      family.value === "Ya" ? "block" : "none";
+
+    companionListContainer.innerHTML = "";
+
+    for (let i = 0; i < companionCount; i++) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "field";
+      wrapper.style.marginBottom = "12px";
+
+      const nameLabel = document.createElement("label");
+      nameLabel.textContent = `Nama pendamping ${i + 1}`;
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.name = "companionName";
+      nameInput.placeholder = "Masukkan nama lengkap";
+      nameInput.required = true;
+
+      const genderLabel = document.createElement("label");
+      genderLabel.textContent = "Jenis kelamin";
+
+      const genderSelect = document.createElement("select");
+      genderSelect.name = "companionGender";
+      genderSelect.required = true;
+
+      genderSelect.add(new Option("Pilih jenis kelamin", ""));
+      genderSelect.add(new Option("Laki-laki", "male"));
+      genderSelect.add(new Option("Perempuan", "female"));
+
+      wrapper.appendChild(nameLabel);
+      wrapper.appendChild(nameInput);
+      wrapper.appendChild(genderLabel);
+      wrapper.appendChild(genderSelect);
+
+      companionListContainer.appendChild(wrapper);
     }
 
-    // Opsional: reset pilihan tempat tidur agar konsisten
     if (resetBeds) {
       bedOptions
         .querySelectorAll('input[name="bedCodes"]')
-        .forEach((input) => { input.checked = false; });
+        .forEach((input) => {
+          input.checked = false;
+        });
     }
 
     updateBedSelectionHint();
@@ -631,6 +658,11 @@
 
   guestCount.addEventListener("change", () => {
     updateCompanionField(true);
+    loadAvailableBeds();
+  });
+
+  guestGender.addEventListener("change", () => {
+    loadAvailableBeds();
   });
 
   updateCompanionField();
