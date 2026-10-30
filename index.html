@@ -570,21 +570,7 @@
       </select>
     </div>
 
-    <div class="field full">
-      <label for="proof">Upload Bukti Pendukung *</label>
-      <input id="proof" name="proof" type="file"
-        accept=".pdf,.jpg,.jpeg,.png" required>
-      <span class="hint">
-        Bukti boarding pass untuk Transit atau screenshot jadwal untuk
-        Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
-      </span>
-    </div>
-
-    <div class="field full">
-      <label for="notes">Catatan Tambahan</label>
-      <textarea id="notes" name="notes"
-        placeholder="Catatan jika diperlukan"></textarea>
-    </div>
+   
   </div>
 
   <button type="button" class="previous-step">Kembali</button>
@@ -601,6 +587,22 @@
     <p class="hint">Ringkasan pemesanan akan ditampilkan di sini.</p>
   </div>
 
+  <div class="field full">
+    <label for="proof">Upload Bukti Pendukung *</label>
+    <input id="proof" name="proof" type="file"
+      accept=".pdf,.jpg,.jpeg,.png" required>
+    <span class="hint">
+      Bukti boarding pass untuk Transit atau screenshot jadwal untuk
+      Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
+    </span>
+  </div>
+
+  <div class="field full">
+    <label for="notes">Catatan Tambahan</label>
+    <textarea id="notes" name="notes"
+      placeholder="Catatan jika diperlukan"></textarea>
+  </div>
+
   <button type="button" class="previous-step">Kembali</button>
   <button type="button" class="next-step">Lanjutkan</button>
 </div>
@@ -612,6 +614,7 @@
 
   <div class="review-notice">
     Pastikan data sudah benar sebelum mengirim pemesanan.
+    Sistem saat ini masih dalam mode pengembangan.
   </div>
 
   <button type="button" class="previous-step">Kembali</button>
@@ -1493,9 +1496,10 @@ function downloadBookingReceipt(details) {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-if (currentBookingStep !== 6) return;
-  if (submitButton.disabled) return;
 
+  if (currentBookingStep !== 6) return;
+
+  if (submitButton.disabled) return;
   if (!supabaseClient) {
     alert("Koneksi Supabase belum siap.");
     return;
@@ -1856,28 +1860,7 @@ if (currentBookingStep === 4) {
     occupantsCard.appendChild(item);
   });
 
-  // Kartu bukti pendukung
-  const proofCard = makeCard("Bukti Pendukung");
-  const proofFile = document.getElementById("proof").files[0];
-
-  const fileBox = document.createElement("div");
-  fileBox.className = "review-file";
-  addText(fileBox, "span", "", "📎");
-  addText(
-    fileBox,
-    "span",
-    "",
-    proofFile ? proofFile.name : "Belum ada file"
-  );
-  proofCard.appendChild(fileBox);
-
-  // Catatan tambahan
-  const notes = document.getElementById("notes").value.trim();
-  if (notes) {
-    const notesCard = makeCard("Catatan Tambahan");
-    addText(notesCard, "p", "", notes);
-  }
-
+ 
   // Pengingat sebelum konfirmasi
   const notice = document.createElement("div");
   notice.className = "review-notice";
