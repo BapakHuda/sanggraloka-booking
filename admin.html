@@ -443,6 +443,45 @@ filteredBookings.forEach((booking) => {
     : "-";
 
   const actionCell = row.insertCell();
+  const noteButton = document.createElement("button");
+noteButton.textContent = "Catatan Admin";
+noteButton.style.cssText =
+  "width:auto;margin:0 6px 6px 0;padding:8px 10px;font-size:12px;";
+
+noteButton.addEventListener("click", async () => {
+  const currentNote = booking.admin_notes || "";
+  const note = prompt(
+    "Catatan internal untuk booking " + booking.booking_code,
+    currentNote
+  );
+
+  if (note === null) return;
+
+  noteButton.disabled = true;
+  noteButton.textContent = "Menyimpan...";
+
+  try {
+    const { error } = await client.rpc(
+  "update_booking_admin_notes",
+  {
+    p_booking_code: booking.booking_code,
+    p_admin_notes: note
+  }
+);
+
+    if (error) throw error;
+
+    alert("Catatan admin berhasil disimpan.");
+    await loadBookings();
+  } catch (error) {
+    alert("Gagal menyimpan catatan: " + error.message);
+  } finally {
+    noteButton.disabled = false;
+    noteButton.textContent = "Catatan Admin";
+  }
+});
+
+actionCell.appendChild(noteButton);
 const detailButton = document.createElement("button");
 detailButton.textContent = "Detail Penghuni";
 detailButton.style.cssText =
