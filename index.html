@@ -451,9 +451,11 @@
   <button type="button" class="next-step">Lanjutkan</button>
 </div>
 
+
+<!-- TAHAP 2: DATA PENGHUNI -->
 <div class="booking-step" data-step="2" hidden>
-  <h3>02. Jumlah Orang dan Tempat Tidur</h3>
-  <p>Tentukan penghuni dan pilih tempat tidur yang tersedia.</p>
+  <h3>Siapa Saja yang Menginap?</h3>
+  <p>Tentukan jumlah penghuni dan lengkapi data setiap orang.</p>
 
   <div class="form-grid">
     <div class="field full">
@@ -487,16 +489,24 @@
       <div id="companionList"></div>
       <small class="hint">Isi nama dan jenis kelamin setiap pendamping.</small>
     </div>
+  </div>
 
-    <div class="field full">
-      <label>Tempat Tidur Tersedia *</label>
-      <div id="bedOptions">
-        <p class="hint">Lengkapi jadwal dan data penghuni terlebih dahulu.</p>
-      </div>
-      <small class="hint" id="bedSelectionHint">
-        Setiap penghuni harus mendapat satu tempat tidur.
-      </small>
+  <button type="button" class="previous-step">Kembali</button>
+  <button type="button" class="next-step">Lanjutkan</button>
+</div>
+
+<!-- TAHAP 3: PILIH TEMPAT TIDUR -->
+<div class="booking-step" data-step="3" hidden>
+  <h3>Pilih Tempat Tidur</h3>
+  <p>Pilih tempat tidur yang tersedia untuk setiap penghuni.</p>
+
+  <div class="field full">
+    <div id="bedOptions">
+      <p class="hint">Lengkapi data penghuni terlebih dahulu.</p>
     </div>
+    <small class="hint" id="bedSelectionHint">
+      Setiap penghuni harus mendapat satu tempat tidur.
+    </small>
   </div>
 
   <button type="button" class="previous-step">Kembali</button>
@@ -1686,6 +1696,21 @@ document.querySelectorAll(".next-step").forEach((button) => {
   const fields = currentPanel.querySelectorAll("input, select, textarea");
 
 for (const field of fields) {
+  if (currentBookingStep === 3) {
+  const bedSelects = document.querySelectorAll(
+    '#bedOptions select[name="bedCode"]'
+  );
+
+  const occupants = getOccupantsFromForm();
+
+  if (
+    bedSelects.length !== occupants.length ||
+    Array.from(bedSelects).some(select => !select.value)
+  ) {
+    alert("Pilih satu tempat tidur untuk setiap penghuni terlebih dahulu.");
+    return;
+  }
+}
   if (!field.checkValidity()) {
     field.reportValidity();
     return;
@@ -1693,7 +1718,7 @@ for (const field of fields) {
 }
 
 
-if (currentBookingStep === 3) {
+if (currentBookingStep === 4) {
   const review = document.getElementById("bookingReview");
   review.replaceChildren();
 
