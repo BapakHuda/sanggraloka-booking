@@ -348,7 +348,7 @@
               </span>
             </div>
 
-            <!-- Data pendamping -->
+                        <!-- Data pendamping -->
             <div class="field full">
               <label for="family">Apakah membawa keluarga atau pendamping? *</label>
               <select id="family" name="family" required>
@@ -358,64 +358,48 @@
               </select>
             </div>
 
-            <!-- Jadwal & kamar -->
             <div class="field">
               <label for="checkIn">Tanggal dan Waktu Masuk *</label>
-              <input id="checkIn" name="checkIn"
-                type="datetime-local" required>
+              <input id="checkIn" name="checkIn" type="datetime-local" required>
             </div>
 
             <div class="field">
               <label for="checkOut">Tanggal dan Waktu Keluar *</label>
-              <input id="checkOut" name="checkOut"
-                type="datetime-local" required>
+              <input id="checkOut" name="checkOut" type="datetime-local" required>
             </div>
 
-            <div class="field">
-              <label for="roomType">Jenis Kamar *</label>
-              <select id="roomType" name="roomType" required>
-                <option value="">Pilih jenis kamar</option>
-                <option value="M">Kamar pria</option>
-                <option value="W">Kamar wanita</option>
+            <div class="field full">
+              <label>Jenis Kelamin Pemesan *</label>
+              <select id="guestGender" name="guestGender" required>
+                <option value="">Pilih jenis kelamin</option>
+                <option value="male">Laki-laki</option>
+                <option value="female">Perempuan</option>
               </select>
             </div>
 
-            <!-- Diisi otomatis oleh JS dengan checkbox tempat tidur -->
-            <div class="field full">
-              <label>Tempat Tidur Tersedia *</label>
-              <div id="bedOptions">
-                <p class="hint">Pilih tanggal dan jenis kamar terlebih dahulu.</p>
-              </div>
-              <small class="hint" id="bedSelectionHint">
-                Pilih tempat tidur sesuai jumlah orang yang menginap.
-              </small>
-            </div>
-
-            <!-- Pilihan jumlah orang diisi dinamis oleh JS -->
             <div class="field full">
               <label for="guestCount">Jumlah Orang yang Menginap *</label>
               <select id="guestCount" name="guestCount" required>
                 <option value="">Pilih jumlah orang</option>
               </select>
-              <span class="hint">
-                Jumlah orang mencakup pemesan dan seluruh pendamping.
-              </span>
+              <span class="hint">Jumlah mencakup pemesan dan seluruh pendamping.</span>
             </div>
 
-            <!-- Hanya ditampilkan jika membawa pendamping -->
-            <div class="field full" id="companionNamesField" style="display: none;">
-              <label for="companionNames">Nama Pendamping *</label>
-              <textarea
-                id="companionNames"
-                name="companionNames"
-                rows="4"
-                placeholder="Tulis satu nama lengkap per baris"
-              ></textarea>
-              <small class="hint">
-                Jumlah nama pendamping harus sama dengan jumlah orang selain pemesan.
+            <div class="field full" id="companionNamesField" style="display:none;">
+              <label>Nama dan Jenis Kelamin Pendamping *</label>
+              <div id="companionList"></div>
+              <small class="hint">Isi nama dan jenis kelamin setiap pendamping.</small>
+            </div>
+
+            <div class="field full">
+              <label>Tempat Tidur Tersedia *</label>
+              <div id="bedOptions">
+                <p class="hint">Pilih tanggal dan data penghuni terlebih dahulu.</p>
+              </div>
+              <small class="hint" id="bedSelectionHint">
+                Setiap orang harus mendapat satu tempat tidur sesuai jenis kelaminnya.
               </small>
             </div>
-
             <div class="field full">
               <label for="notes">Catatan Tambahan</label>
               <textarea id="notes" name="notes"
