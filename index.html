@@ -619,6 +619,54 @@
     text-align: left;
   }
 }
+    .proof-info {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #edf5f0;
+  color: #17613d;
+  border: 1px solid #d5e8da;
+  border-radius: 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+      display: flex;
+.proof-info {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #edf5f0;
+  color: #17613d;
+  border: 1px solid #d5e8da;
+  border-radius: 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+#proof {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #f8faf8;
+  border: 1px dashed #a9c4b1;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+#proof::file-selector-button {
+  background: #164e3d;
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  padding: 8px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.proof-info[hidden] {
+  display: none;
+}
   </style>
 </head>
 <body>
@@ -827,6 +875,8 @@
     <label for="proof">Upload Bukti Pendukung *</label>
     <input id="proof" name="proof" type="file"
       accept=".pdf,.jpg,.jpeg,.png" required>
+    
+    <div id="proofInfo" class="proof-info" hidden></div>
     <span class="hint">
       Bukti boarding pass untuk Transit atau screenshot jadwal untuk
       Jump Shift. Format PDF, JPG atau PNG, maksimal 10 MB.
@@ -936,6 +986,42 @@
   const bedOptions            = document.getElementById("bedOptions");
   const bedSelectionHint      = document.getElementById("bedSelectionHint");
   const proof                 = document.getElementById("proof");
+    const proofInfo = document.getElementById("proofInfo");
+
+proof.addEventListener("change", () => {
+  const file = proof.files?.[0];
+
+  proofInfo.replaceChildren();
+
+  if (!file) {
+    proofInfo.hidden = true;
+    return;
+  }
+
+  const allowedTypes = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Format file harus PDF, JPG, atau PNG.");
+    proof.value = "";
+    proofInfo.hidden = true;
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    alert("Ukuran file maksimal 10 MB.");
+    proof.value = "";
+    proofInfo.hidden = true;
+    return;
+  }
+
+  proofInfo.textContent =
+    `✓ ${file.name} (${(file.size / 1048576).toFixed(2)} MB)`;
+  proofInfo.hidden = false;
+});
   const family                = document.getElementById("family");
   const guestCount            = document.getElementById("guestCount");
   const guestGender           = document.getElementById("guestGender");
@@ -1924,6 +2010,8 @@ form.addEventListener("submit", async (event) => {
     }
 
    form.reset();
+    proofInfo.replaceChildren();
+proofInfo.hidden = true;
 updateCompanionField();
 refreshMinimumDates();
 resetBedOptions();
